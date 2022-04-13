@@ -17,6 +17,7 @@ include_directories(
 
 add_Executable(main
     src/main.cpp
+    src/CompShader.cpp
 )
 
 target_link_libraries(main ${OPENGL_LIBRARY} glfw GLEW_1130)
