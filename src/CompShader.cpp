@@ -110,7 +110,7 @@ void CompShader::loadData(){
     glBufferData(GL_SHADER_STORAGE_BUFFER, loader.sizeofGPUData(), gpuData, GL_DYNAMIC_COPY);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, GL_data);
 
-
+    cout << "Data has been placed on the gpu\n";
 }
 
 

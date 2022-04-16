@@ -3,9 +3,9 @@
 #include <sstream>
 #include <iostream>
 #include <stdio.h>
+#include <cstring>
 
 #include "Helpers.h"
-#include "Float16.h"
 
 using namespace std;
 
