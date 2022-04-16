@@ -100,8 +100,8 @@ void CompShader::loadData(){
     loader.addFromFile("../data/long-beach-va.data", 200);
     loader.addFromFile("../data/switzerland.data", 123);
 
-    // ACHTUNG: gpuData still owned by loader
-    short* gpuData = loader.getGPUData();
+    // NOTE: gpuData still owned by loader
+    void* gpuData = loader.getGPUData();
     loader.dropRawData();
 
     GL_data = 0;

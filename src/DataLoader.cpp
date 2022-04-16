@@ -42,28 +42,39 @@ void DataLoader::readRecord(ifstream &file, int r){
 }
 
 void DataLoader::makeGPUFormat(){
-    // data is ordered by field
-    gpuData = new short[nFieldsGPU * nRecords];
+    // data is ordered by field, with floats before ints
+
+    // Data cast as int to ease iteration;
+    gpuData =  new int[nFieldsGPU * nRecords];
     int gpuField = 0;
 
-    for(int f = 0; f<nFields; f++){
-        char format = formatLookup[f];
-
-        switch(format){
-            case 0:
-                for(int i=0; i<nRecords; i++){
-                    gpuData[gpuField*nRecords + i] = data[f*nRecords + i];
-                }
-                break;
-            case 1:
-                for(int i=0; i<nRecords; i++){
-                    gpuData[gpuField*nRecords + i] = floatToFloat16(data[f*nRecords + i]);
-                }
-                break;
-            case 2:
-                continue;
-        }
+    for(int f : floatFields){
+        memcpy(&gpuData[gpuField*nRecords], &data[f*nRecords], currRecords * sizeof(int));
         gpuField++;
+    }
+
+    for(int i=0; i<nFields; i++){
+        // First check that i should be copied now
+        bool found = false;
+        for(int j : floatFields){
+            if(j == i){
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            for(int j : excludeFields){
+                if(j == i){
+                    found = true;
+                    break;
+                }
+            }
+        }
+
+        if(!found){
+            memcpy(&gpuData[gpuField*nRecords], &data[i*nRecords], currRecords * sizeof(int));
+            gpuField++;
+        }
     }
 }
 
