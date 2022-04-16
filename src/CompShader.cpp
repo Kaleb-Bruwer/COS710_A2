@@ -6,6 +6,8 @@
 #include <string>
 #include <vector>
 
+#include "DataLoader.h"
+
 
 using namespace std;
 
@@ -90,6 +92,27 @@ bool CompShader::compileShader(string filename){
 
     return true;
 }
+
+void CompShader::loadData(){
+    DataLoader loader;
+    loader.addFromFile("../data/cleveland.data", 282);
+    loader.addFromFile("../data/hungarian.data", 294);
+    loader.addFromFile("../data/long-beach-va.data", 200);
+    loader.addFromFile("../data/switzerland.data", 123);
+
+    // ACHTUNG: gpuData still owned by loader
+    short* gpuData = loader.getGPUData();
+    loader.dropRawData();
+
+    GL_data = 0;
+    glGenBuffers(1, &GL_data);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_data);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, loader.sizeofGPUData(), gpuData, GL_DYNAMIC_COPY);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, GL_data);
+
+
+}
+
 
 void CompShader::execShader(){
     if(!usable){
