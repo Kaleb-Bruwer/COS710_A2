@@ -1,7 +1,5 @@
 #include "CompShader.h"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -42,7 +40,6 @@ bool CompShader::initOpenGl(){
     glewExperimental = true;
     if (glewInit() != GLEW_OK) {
         cout << "Failed to initialize GLEW\n";
-        fprintf(stderr, "Failed to initialize GLEW\n");
         getchar();
         glfwTerminate();
         return false;
@@ -76,10 +73,10 @@ bool CompShader::compileShader(string filename){
 	glGetShaderiv(compShaderID, GL_COMPILE_STATUS, &result);
 	glGetShaderiv(compShaderID, GL_INFO_LOG_LENGTH, &infoLogLength);
 	if ( infoLogLength > 0 ){
-		printf("Shader compilation error!\n");
+        cout << "Shader compilation error!" << endl;
 		vector<char> errors(infoLogLength+1);
 		glGetShaderInfoLog(compShaderID, infoLogLength, NULL, &errors[0]);
-		printf("%s\n", &errors[0]);
+        cout << &errors[0] << endl;
         return false;
 	}
 
