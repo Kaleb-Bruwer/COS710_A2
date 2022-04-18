@@ -35,15 +35,15 @@ void generateFullTree(unsigned short maxDepth){
             currDepth++;
             nextType = tree[index].getParam1();
             enum NodeReturnType type2 = tree[index].getParam2();
+            // Not all functions take 2 parameters
             if(type2 != NONE)
                 unfilled.push(make_tuple(currDepth, type2));
             index++;
         }
         else{
             // Terminal node
-            tree[index] = getRandTerminal();
-            tree[index+1] = getRandTerminal();
-            index += 2;
+            tree[index] = randTerminal(nextType);
+            index++;
             if(!unfilled.empty()){
                 tuple<int, enum NodeReturnType> t = unfilled.top();
                 unfilled.pop();

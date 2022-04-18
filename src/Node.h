@@ -86,6 +86,26 @@ inline struct Node randFloatFunc(){
     return result;
 };
 
+inline struct Node randTerminal(enum NodeReturnType t){
+    const int numFloats = 8;
+    const int numInts = 61; //excludes target
+    const int targetPos = 46;
+
+    Node result{0,0};
+
+    switch(t){
+        case INT:
+            result.val = rand() % numInts;
+            if(result.val >= targetPos)
+                result.val++;
+            break;
+        case FLOAT:
+            result.val = rand() % numFloats;
+            break;
+    }
+    return result;
+};
+
 inline struct Node randFunc(enum NodeReturnType t){
     switch(t){
         case INT:
@@ -93,4 +113,4 @@ inline struct Node randFunc(enum NodeReturnType t){
         case FLOAT:
             return randFloatFunc();
     };
-}
+};

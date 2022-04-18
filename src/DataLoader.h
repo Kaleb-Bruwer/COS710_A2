@@ -3,7 +3,11 @@
 #include <string>
 #include <fstream>
 
-// 75 fields, if name is excluded
+// In raw data 75 fields, if name is excluded. target value #58
+
+// 8 float fields, 62 int fields (result included)
+//      target value: 46 (I think)
+
 
 class DataLoader{
 private:
