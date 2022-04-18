@@ -21,6 +21,7 @@ add_Executable(main
     src/DataLoader.cpp
     src/Helpers.cpp
     src/Tree.cpp
+    src/Node.cpp
 )
 
 target_link_libraries(main ${OPENGL_LIBRARY} glfw GLEW_1130)

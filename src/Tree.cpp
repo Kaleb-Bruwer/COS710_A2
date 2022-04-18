@@ -2,12 +2,9 @@
 
 #include <cmath>
 #include <stack>
+#include <tuple>
 
 using namespace std;
-
-struct Node getRandFunc(){
-    return Node{0,0};
-}
 
 struct Node getRandTerminal(){
     return Node{2,0};
@@ -28,30 +25,30 @@ void generateFullTree(unsigned short maxDepth){
     // Populate tree
     int index = 0;
     int currDepth = 0;
-    stack<int> unfilled;
+    stack<tuple<int, enum NodeReturnType>> unfilled;
+    enum NodeReturnType nextType = INT; //tree result must be INT
 
-    tree[index] = getRandFunc();
-    currDepth++;
-    unfilled.push(currDepth);
-    index++;
-
-    bool justPopped = false;
     while(true){
         if(currDepth < maxDepth - 1){
-            // Another funciton node
-            tree[index] = getRandFunc();
+            // Funciton node
+            tree[index] = randFunc(nextType);
             currDepth++;
-            unfilled.push(currDepth);
+            nextType = tree[index].getParam1();
+            enum NodeReturnType type2 = tree[index].getParam2();
+            if(type2 != NONE)
+                unfilled.push(make_tuple(currDepth, type2));
             index++;
         }
         else{
-            // A terminal node
+            // Terminal node
             tree[index] = getRandTerminal();
             tree[index+1] = getRandTerminal();
             index += 2;
             if(!unfilled.empty()){
-                currDepth = unfilled.top();
+                tuple<int, enum NodeReturnType> t = unfilled.top();
                 unfilled.pop();
+                currDepth = get<0>(t);
+                nextType = get<1>(t);
             }
             else break;
         }
