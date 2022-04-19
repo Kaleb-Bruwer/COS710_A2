@@ -51,5 +51,6 @@ vector<struct Node> generateFullTree(unsigned short maxDepth){
 
     tree[index] = Node{0,0};
 
+    tree.resize(index+1);
     return tree;
 }

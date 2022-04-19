@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdlib>
+#include <iostream>
 
 // Not to be confused with Node.type
 enum NodeReturnType{
@@ -19,6 +20,8 @@ public:
 
     enum NodeReturnType getParam1();
     enum NodeReturnType getParam2();
+
+    friend std::ostream& operator<<(std::ostream& out, const Node &n);
 
     unsigned char fullVal(){
         return (type << 6) & val;
@@ -47,8 +50,8 @@ FLOAT:
 // Making the following functions inline should speed up mutation
 
 inline struct Node randIntFunc(){
-    const int intWeights[] = {1,1,1,1,1,4};
-    const int intTotalWeight = 9;
+    const int intWeights[] = {1,1,1,1,1,2};
+    const int intTotalWeight = 7;
     const int count = sizeof(intWeights)/sizeof(int);
 
     int v = rand() % intTotalWeight;
@@ -67,8 +70,8 @@ inline struct Node randIntFunc(){
 };
 
 inline struct Node randFloatFunc(){
-    const int floatWeights[] = {1,1,1,1,5};
-    const int floatTotalWeight = 9;
+    const int floatWeights[] = {1,1,1,1,3};
+    const int floatTotalWeight = 7;
     const int count = sizeof(floatWeights)/sizeof(int);
 
     int v = rand() % floatTotalWeight;
@@ -95,11 +98,13 @@ inline struct Node randTerminal(enum NodeReturnType t){
 
     switch(t){
         case INT:
+            result.type = 2;
             result.val = rand() % numInts;
             if(result.val >= targetPos)
                 result.val++;
             break;
         case FLOAT:
+            result.type = 3;
             result.val = rand() % numFloats;
             break;
     }
