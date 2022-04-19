@@ -20,8 +20,9 @@ add_Executable(main
     src/CompShader.cpp
     src/DataLoader.cpp
     src/Helpers.cpp
-    src/Tree.cpp
     src/Node.cpp
+    src/TreeGen.cpp
+    src/Population.cpp
 )
 
 target_link_libraries(main ${OPENGL_LIBRARY} glfw GLEW_1130)

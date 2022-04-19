@@ -1,4 +1,4 @@
-#include "Tree.h"
+#include "TreeGen.h"
 
 #include <cmath>
 #include <stack>
@@ -11,16 +11,11 @@ struct Node getRandTerminal(){
 }
 
 
-void generateFullTree(unsigned short maxDepth){
+vector<struct Node> generateFullTree(unsigned short maxDepth){
     // Prepare array in which tree will be built
-    int numNodes = pow(2, maxDepth + 1) - 1;
-    Node* tree = 0;
-
-    bool stackAllocation = (numNodes < 256);
-    if(stackAllocation)
-        tree = (Node*) alloca(numNodes);
-    else
-        tree = new Node[numNodes];
+    // Last node is a NULL
+    int numNodes = pow(2, maxDepth + 1);
+    vector<struct Node> tree(numNodes);
 
     // Populate tree
     int index = 0;
@@ -54,7 +49,7 @@ void generateFullTree(unsigned short maxDepth){
         }
     }
 
+    tree[index] = Node{0,0};
 
-    if(!stackAllocation)
-        delete [] tree;
+    return tree;
 }
