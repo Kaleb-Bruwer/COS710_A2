@@ -18,8 +18,11 @@ private:
     bool compileShader(std::string filename);
 
 public:
-    CompShader(std::string filename = "../src/compshader.glsl");
-    void loadData();
+    CompShader(){};
+    CompShader(std::string filename);
+    void initialize(std::string filename = "../src/compshader.glsl");
+
+    void loadData(void* data, unsigned int len);
 
     ~CompShader();
 

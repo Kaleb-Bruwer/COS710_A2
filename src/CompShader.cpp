@@ -12,9 +12,14 @@
 using namespace std;
 
 CompShader::CompShader(string filename){
+    initialize(filename);
+}
+
+void CompShader::initialize(string filename){
     if(initOpenGl() && compileShader(filename))
         usable = true;
 }
+
 
 CompShader::~CompShader(){
     glfwTerminate();
@@ -93,21 +98,11 @@ bool CompShader::compileShader(string filename){
     return true;
 }
 
-void CompShader::loadData(){
-    DataLoader loader;
-    loader.addFromFile("../data/cleveland.data", 282);
-    loader.addFromFile("../data/hungarian.data", 294);
-    loader.addFromFile("../data/long-beach-va.data", 200);
-    loader.addFromFile("../data/switzerland.data", 123);
-
-    // NOTE: gpuData still owned by loader
-    void* gpuData = loader.getGPUData();
-    loader.dropRawData();
-
+void CompShader::loadData(void* gpuData, unsigned int len){
     GL_data = 0;
     glGenBuffers(1, &GL_data);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_data);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, loader.sizeofGPUData(), gpuData, GL_DYNAMIC_COPY);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, len, gpuData, GL_DYNAMIC_COPY);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, GL_data);
 
     cout << "Data has been placed on the gpu\n";

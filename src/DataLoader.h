@@ -21,9 +21,6 @@ private:
     int excludeFields[5] = {0, 1, 7, 44, 45};
     int floatFields[8] = {28, 29, 30, 39, 46, 48, 73, 74};
 
-    // 0: short, 1:float16, 2:exclude
-    char formatLookup[nFields] = {0};
-
     // Combination of floats followed by ints, the GPU will know what to do
     int* gpuData = 0;
 
@@ -35,14 +32,7 @@ public:
 
         nFieldsGPU = nFields;
 
-        for(int e : excludeFields){
-            formatLookup[e] = 2;
-            nFieldsGPU--;
-        }
-
-        for(int f : floatFields){
-            formatLookup[f] = 1;
-        }
+        nFieldsGPU -= (sizeof(excludeFields)/sizeof(int));
     };
 
     ~DataLoader(){

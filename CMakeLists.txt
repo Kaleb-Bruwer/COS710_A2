@@ -23,6 +23,7 @@ add_Executable(main
     src/Node.cpp
     src/TreeGen.cpp
     src/Population.cpp
+    src/Manager.cpp
 )
 
 target_link_libraries(main ${OPENGL_LIBRARY} glfw GLEW_1130)
