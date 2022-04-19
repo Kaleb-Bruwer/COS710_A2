@@ -22,10 +22,21 @@ public:
     enum NodeReturnType getParam2();
 
     friend std::ostream& operator<<(std::ostream& out, const Node &n);
+    friend bool operator==(const Node &lhs, const Node &rhs);
+    friend bool operator!=(const Node &lhs, const Node &rhs);
 
     unsigned char fullVal(){
         return (type << 6) & val;
     };
+
+    unsigned int nParameters(){
+        if(type != 0)
+            return 0;
+        if(val == 6 || val == 37)
+            return 1;
+        return 2;
+    };
+
 };
 
 /* function Node.val meanings:

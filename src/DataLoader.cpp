@@ -7,6 +7,8 @@
 
 #include "Helpers.h"
 
+#define castF(a) *(float*)(void*)(&a)
+
 using namespace std;
 
 void DataLoader::addFromFile(std::string filename, int numRecords){
@@ -73,6 +75,9 @@ void DataLoader::makeGPUFormat(){
 
         if(!found){
             memcpy(&gpuData[gpuField*nRecords], &data[i*nRecords], currRecords * sizeof(int));
+            for(int i=0; i<currRecords; i++){
+                gpuData[gpuField*nRecords + i] = (int)castF(gpuData[gpuField*nRecords + i]);
+            }
             gpuField++;
         }
     }

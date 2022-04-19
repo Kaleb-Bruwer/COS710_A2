@@ -33,3 +33,11 @@ ostream& operator<<(ostream& out, const Node &n){
     out << "(" << (int)n.type << ", " << (int)n.val << ")";
     return out;
 }
+
+bool operator==(const Node &lhs, const Node &rhs){
+    return (lhs.type == rhs.type) && (lhs.val == rhs.val);
+}
+
+bool operator!=(const Node &lhs, const Node &rhs){
+    return !(lhs == rhs);
+}

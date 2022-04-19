@@ -24,6 +24,7 @@ add_Executable(main
     src/TreeGen.cpp
     src/Population.cpp
     src/Manager.cpp
+    src/cpuExec.cpp
 )
 
 target_link_libraries(main ${OPENGL_LIBRARY} glfw GLEW_1130)

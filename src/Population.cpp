@@ -22,12 +22,13 @@ void Population::rampedFull(int popSize, int maxDepth){
         int nextStop = (i-1)*(popSize/(double)(maxDepth - 1));
         for(; numDone < nextStop; numDone++){
             vector<Node> result = generateFullTree(i);
-            startIndexes.push_back(filledSize);
+            startIndexes.push_back(filledSize+1);
             filledSize += result.size();
             treesVec.insert(treesVec.end(), result.begin(), result.end());
         }
     }
 
-    trees = new Node[filledSize];
-    memcpy(trees, &treesVec[0], filledSize * sizeof(Node));
+    trees = new Node[filledSize+1];
+    trees[0] = Node{0,0};
+    memcpy(&trees[1], &treesVec[0], filledSize * sizeof(Node));
 }
