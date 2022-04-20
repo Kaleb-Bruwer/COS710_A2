@@ -1,7 +1,7 @@
 #pragma once
 
 #include "DataLoader.h"
-#include "Population.h"
+#include <Population/Population.h>
 #include "CompShader.h"
 
 class Manager{

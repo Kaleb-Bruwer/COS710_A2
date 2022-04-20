@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Node.h"
+#include <Population/Node.h>
 
 /*
 bottom: last node of tree, func works back from it until NULL reached

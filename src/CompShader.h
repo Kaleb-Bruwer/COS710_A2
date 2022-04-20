@@ -6,6 +6,8 @@
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
+#include <Population/Node.h>
+
 class CompShader{
 private:
     GLFWwindow* window = 0;
