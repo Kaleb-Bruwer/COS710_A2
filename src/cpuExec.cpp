@@ -68,6 +68,7 @@ int execTree(Node* node, int* data, int r){
                     result = left * right;
                     break;
                 case 4: //divide
+                    if(right == 0) right = 1;
                     result = left / right;
                     break;
                 case 5: //mod

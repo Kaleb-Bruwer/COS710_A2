@@ -13,12 +13,15 @@ struct Node getRandTerminal(){
 
 vector<struct Node> generateFullTree(unsigned short maxDepth){
     // Prepare array in which tree will be built
-    // Last node is a NULL
+    // First node is a NULL (last encountered during execution)
+
+    // numNodes initialized to max possible size, will be resized at end
     int numNodes = pow(2, maxDepth + 1);
     vector<struct Node> tree(numNodes);
 
     // Populate tree
-    int index = 0;
+    tree[0] = Node{0,0};
+    int index = 1;
     int currDepth = 0;
     stack<tuple<int, enum NodeReturnType>> unfilled;
     enum NodeReturnType nextType = INT; //tree result must be INT
@@ -49,8 +52,6 @@ vector<struct Node> generateFullTree(unsigned short maxDepth){
         }
     }
 
-    tree[index] = Node{0,0};
-
-    tree.resize(index+1);
+    tree.resize(index);
     return tree;
 }
