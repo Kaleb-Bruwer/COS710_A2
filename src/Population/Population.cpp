@@ -29,5 +29,16 @@ void Population::rampedFull(int popSize, int maxDepth){
     }
 
     trees = new Node[filledSize];
+    numNodes = filledSize;
     memcpy(&trees[0], &treesVec[0], filledSize * sizeof(Node));
+}
+
+void Population::makeGPUTrees(){
+    if(!trees)
+        return;
+
+    gpuTrees = new GPUNode[numNodes];
+    for(int i=0; i<numNodes; i++){
+        gpuTrees[i] = GPUNode{trees[i].type, trees[i].val};
+    }
 }

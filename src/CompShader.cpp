@@ -108,6 +108,21 @@ void CompShader::loadData(void* gpuData, unsigned int len){
     cout << "Data has been placed on the gpu\n";
 }
 
+void CompShader::loadTrees(GPUNode* trees, unsigned int len, vector<unsigned int> &starts){
+    GL_trees = 0;
+    glGenBuffers(1, &GL_trees);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_trees);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, len*sizeof(GPUNode), trees, GL_DYNAMIC_COPY);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, GL_trees);
+
+    GL_starts = 0;
+    glGenBuffers(1, &GL_starts);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_starts);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, starts.size()*sizeof(unsigned int), &starts[0], GL_DYNAMIC_COPY);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 3, GL_starts);
+
+    cout << "Trees have been placed on the gpu\n";
+}
 
 void CompShader::execShader(){
     if(!usable){

@@ -21,9 +21,10 @@ add_Executable(main
     src/CompShader.cpp
     src/DataLoader.cpp
     src/Helpers.cpp
-    src/Node.cpp
-    src/TreeGen.cpp
-    src/Population.cpp
+	src/Population/Population.cpp
+	src/Population/TreeGen.cpp
+	src/Population/Node.cpp
+    src/Population/GPUNode.cpp
     src/Manager.cpp
     src/cpuExec.cpp
 )

@@ -1,12 +1,13 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 
-#include <Population/Node.h>
+#include <Population/GPUNode.h>
 
 class CompShader{
 private:
@@ -15,6 +16,8 @@ private:
     bool usable = false;
 
     GLuint GL_data;
+    GLuint GL_trees;
+    GLuint GL_starts;
 
     bool initOpenGl(); //Probably shouldn't run this more than once
     bool compileShader(std::string filename);
@@ -25,6 +28,7 @@ public:
     void initialize(std::string filename = "../src/compshader.glsl");
 
     void loadData(void* data, unsigned int len);
+    void loadTrees(GPUNode* trees, unsigned int len, std::vector<unsigned int> &starts);
 
     ~CompShader();
 

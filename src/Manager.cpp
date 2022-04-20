@@ -19,11 +19,13 @@ void Manager::initialize(int p){
     // Generate initial population
     popSize = p;
     population.rampedFull(p, 15);
+    population.makeGPUTrees();
     fitness = new float[p];
 
     // Initialise shader
     compShader.initialize();
     compShader.loadData(dataLoader.getGPUData(), dataLoader.sizeofGPUData());
+    compShader.loadTrees(population.gpuTrees, population.numNodes, population.startIndexes);
 
 }
 
