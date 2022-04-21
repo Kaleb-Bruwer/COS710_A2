@@ -18,7 +18,7 @@ void Manager::initialize(int p){
 
     // Generate initial population
     popSize = p;
-    population.rampedFull(p, 15);
+    population.rampedFull(p, 20);
     population.makeGPUTrees();
     fitness = new float[p];
 
@@ -72,4 +72,14 @@ void Manager::runCPU(){
         fitness[i] = errorTrain;
     }
     delete [] results;
+}
+
+void Manager::runGPU(){
+    cout << "Using GPU\n";
+    compShader.execShader(fitness, popSize);
+
+    // for(int i=0; i<popSize; i++){
+    //     cout << fitness[i] << " ";
+    // }
+    // cout << endl;
 }

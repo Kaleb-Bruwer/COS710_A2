@@ -17,15 +17,15 @@ int main(){
 
 
 
-    // manager.printInfo();
-    // auto start = chrono::high_resolution_clock::now();
-    // manager.runCPU();
-    //
-    // auto end = chrono::high_resolution_clock::now();
-    //
-    // chrono::duration<double> diff = end - start;
-    // double ms = diff.count() * 1000;
-    // cout << "Time elapsed: " << ms << "ms\n";
+    manager.printInfo();
+    auto start = chrono::high_resolution_clock::now();
+    manager.runGPU();
+
+    auto end = chrono::high_resolution_clock::now();
+
+    chrono::duration<double> diff = end - start;
+    double ms = diff.count() * 1000;
+    cout << "Time elapsed: " << ms << "ms\n";
 
 
 	return 0;

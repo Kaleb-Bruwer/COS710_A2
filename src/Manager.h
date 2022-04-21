@@ -20,6 +20,7 @@ public:
     Manager(){};
     void initialize(int popSize);
     void runCPU();
+    void runGPU();    
     void printInfo();
 
 };

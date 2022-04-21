@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -108,7 +109,8 @@ void CompShader::loadData(void* gpuData, unsigned int len){
     cout << "Data has been placed on the gpu\n";
 }
 
-void CompShader::loadTrees(GPUNode* trees, unsigned int len, vector<unsigned int> &starts){
+void CompShader::loadTrees(GPUNode* trees, unsigned int len,
+        vector<unsigned int> &starts){
     GL_trees = 0;
     glGenBuffers(1, &GL_trees);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_trees);
@@ -124,33 +126,36 @@ void CompShader::loadTrees(GPUNode* trees, unsigned int len, vector<unsigned int
     cout << "Trees have been placed on the gpu\n";
 }
 
-void CompShader::execShader(){
+/*
+TODO: execute more than GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS trees by
+doing multiple dispatches (will require changes to GL_starts)
+*/
+void CompShader::execShader(float* fitness, int nTrees){
     if(!usable){
         cout << "Attempted to execute an unusable shader\n";
         return;
     }
-
-    // Trying buffers
-    float vals1[64];
-    for(int i=0; i<64; i++){
-        vals1[i] = 0;
+    if(!fitness){
+        cout << "Attempted to execute shader with no fitness destination\n";
+        return;
     }
 
-    GLuint ssbo = 0;
-    glGenBuffers(1, &ssbo);
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(float[64]), &vals1, GL_DYNAMIC_COPY);
-    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, ssbo);
+    // GL_fitness will actually be used for output, but is being initialized as normal
+    GL_fitness = 0;
+    glGenBuffers(1, &GL_fitness);
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_fitness);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, nTrees * sizeof(float), fitness, GL_DYNAMIC_COPY);
+    glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, GL_fitness);
+
 
     glUseProgram(programID);
-    glDispatchCompute(16,1,1);
+    glDispatchCompute(nTrees,1,1);
 
     glMemoryBarrier(GL_SHADER_STORAGE_BARRIER_BIT);
 
-    glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-    float* returnedData = (float*) glMapBuffer(GL_SHADER_STORAGE_BUFFER,  GL_READ_ONLY);
-    for(int i=0; i<64; i++){
-        cout << returnedData[i] << " ";
-    }
-    cout << endl;
+    glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_fitness);
+    float* fitRet = (float*) glMapBuffer(GL_SHADER_STORAGE_BUFFER,  GL_READ_ONLY);
+    memcpy(fitness, fitRet, nTrees*sizeof(float));
+
+
 }
