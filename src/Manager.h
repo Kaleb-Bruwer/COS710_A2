@@ -18,7 +18,7 @@ private:
 
 public:
     Manager(){};
-    void initialize(int popSize);
+    void initialize(int popSize, int maxDepth = 10);
     void runCPU();
     void runGPU();
 

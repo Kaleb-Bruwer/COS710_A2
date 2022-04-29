@@ -7,7 +7,7 @@ using namespace std;
 
 #define castF(a) *(float*)(void*)(&a)
 
-void Manager::initialize(int p){
+void Manager::initialize(int p, int maxDepth){
     // Load data
     dataLoader.addFromFile("../data/cleveland.data", 282);
     dataLoader.addFromFile("../data/hungarian.data", 294);
@@ -18,30 +18,30 @@ void Manager::initialize(int p){
 
     // Generate initial population
     popSize = p;
-    population.rampedFull(p, 18);
+    population.rampedFull(p, maxDepth);
     population.makeGPUTrees();
     fitness = new float[p];
 
-    // Initialise shader
-    compShader.initialize();
-    compShader.loadData(dataLoader.getGPUData(), dataLoader.sizeofGPUData());
-    compShader.loadTrees(population.gpuTrees, population.numNodes, population.startIndexes);
-
-    GLint t[3];
-    glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_SIZE, t);
-    cout << "GL_MAX_COMPUTE_WORK_GROUP_SIZE: " << t[0] << " " << t[1] << " " << t[2] << endl;
-
-    glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_COUNT, t);
-    cout << "GL_MAX_COMPUTE_WORK_GROUP_COUNT: " << t[0] << " " << t[1] << " " << t[2] << endl;
-
-    glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, t);
-    cout << "GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS: " << t[0] << " " << t[1] << " " << t[2] << endl;
+    // // Initialise shader
+    // compShader.initialize();
+    // compShader.loadData(dataLoader.getGPUData(), dataLoader.sizeofGPUData());
+    // compShader.loadTrees(population.gpuTrees, population.numNodes, population.startIndexes);
+    //
+    // GLint t[3];
+    // glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_SIZE, t);
+    // cout << "GL_MAX_COMPUTE_WORK_GROUP_SIZE: " << t[0] << " " << t[1] << " " << t[2] << endl;
+    //
+    // glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_COUNT, t);
+    // cout << "GL_MAX_COMPUTE_WORK_GROUP_COUNT: " << t[0] << " " << t[1] << " " << t[2] << endl;
+    //
+    // glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, t);
+    // cout << "GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS: " << t[0] << " " << t[1] << " " << t[2] << endl;
 }
 
 void Manager::printInfo(){
     cout << "num Trees: " << popSize << endl;
     cout << "num Training case: " << trainSize << endl;
-    cout << "total nodes (excl nulls): " << population.startIndexes[popSize-1] - popSize << endl;
+    cout << "total nodes (excl nulls): " << population.numNodes << endl;
 
     // int* data = (int*)dataLoader.getGPUData();
     // for(int i=0; i<trainSize; i++){
@@ -56,7 +56,9 @@ void Manager::runCPU(){
 
     int* results = new int[numInputs];
     for(int i=0; i<popSize; i++){
-        Node* bottom = &population.trees[population.startIndexes[i]];
+        // Node* bottom = &population.trees[population.startIndexes[i]];
+        int treeSize = population.trees[i].size();
+        Node* bottom = &population.trees[i][treeSize-1];
 
         for(int j=0; j<numInputs; j++){
             results[j] = execTree(bottom, data, j);
@@ -115,7 +117,9 @@ void Manager::validateGPU(){
 
     differences = 0;
     for(int t=0; t<popSize; t++){
-        Node* bottom = &population.trees[population.startIndexes[t]];
+        int treeSize = population.trees[t].size();
+        Node* bottom = &population.trees[t][treeSize-1];
+
         for(int r=0; r<numInputs; r++){
             int cpuAns = execTree(bottom, data, r);
             if(cpuAns != (int)results[t*899 + r]){
