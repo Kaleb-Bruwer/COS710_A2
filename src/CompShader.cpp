@@ -130,7 +130,7 @@ void CompShader::loadTrees(GPUNode* trees, unsigned int len,
 TODO: execute more than GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS trees by
 doing multiple dispatches (will require changes to GL_starts)
 */
-void CompShader::execShader(float* fitness, int nTrees){
+void CompShader::execShader(float* fitness, int nTrees, int numInputs){
     if(!usable){
         cout << "Attempted to execute an unusable shader\n";
         return;
@@ -144,7 +144,7 @@ void CompShader::execShader(float* fitness, int nTrees){
     GL_fitness = 0;
     glGenBuffers(1, &GL_fitness);
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_fitness);
-    glBufferData(GL_SHADER_STORAGE_BUFFER, nTrees * sizeof(float), fitness, GL_DYNAMIC_COPY);
+    glBufferData(GL_SHADER_STORAGE_BUFFER, nTrees * numInputs * sizeof(float), fitness, GL_DYNAMIC_COPY);
     glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, GL_fitness);
 
 
@@ -155,7 +155,7 @@ void CompShader::execShader(float* fitness, int nTrees){
 
     glBindBuffer(GL_SHADER_STORAGE_BUFFER, GL_fitness);
     float* fitRet = (float*) glMapBuffer(GL_SHADER_STORAGE_BUFFER,  GL_READ_ONLY);
-    memcpy(fitness, fitRet, nTrees*sizeof(float));
+    memcpy(fitness, fitRet, nTrees*numInputs*sizeof(float));
 
 
 }

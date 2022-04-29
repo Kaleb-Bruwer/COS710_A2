@@ -34,6 +34,6 @@ public:
 
     ~CompShader();
 
-    void execShader(float* fitness, int nTrees);
+    void execShader(float* fitness, int nTrees, int numInputs);
 
 };

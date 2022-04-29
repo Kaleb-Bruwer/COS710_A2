@@ -3,8 +3,8 @@
 const int nRecords = 899;
 
 // Assumed to be same size as number of trees (starts)
-layout(std430, binding = 0) writeonly buffer fit{
-    float fitness[];
+layout(std430, binding = 0) writeonly buffer ans{
+    float results[];
 };
 
 layout(std430, binding = 1) buffer GL_data{
@@ -20,7 +20,7 @@ layout(std430, binding = 3) buffer startIndexes{
     uint starts[];
 };
 
-layout(local_size_x = nRecords, local_size_y = 1, local_size_z = 1) in;
+layout(local_size_x = nRecords) in;
 
 int nParameters(uvec2 node){
     if(node.x != 0)
@@ -183,5 +183,6 @@ void main() {
         }
         nodeIndex--;
     }
-    fitness[gl_WorkGroupID.x] = compStackI[0];
+    results[gl_WorkGroupID.x*nRecords + r] = compStackI[0];
+
 }

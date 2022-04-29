@@ -61,8 +61,8 @@ FLOAT:
 // Making the following functions inline should speed up mutation
 
 inline struct Node randIntFunc(){
-    const int intWeights[] = {1,1,0,1,1,2};
-    const int intTotalWeight = 6;
+    const int intWeights[] = {1,1,0,1,0,2};
+    const int intTotalWeight = 5;
     const int count = sizeof(intWeights)/sizeof(int);
 
     int v = rand() % intTotalWeight;

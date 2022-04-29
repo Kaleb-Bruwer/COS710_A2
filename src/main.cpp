@@ -13,13 +13,12 @@ using namespace std;
 
 int main(){
     Manager manager;
-    manager.initialize(1000);
-
-
+    manager.initialize(3000);
 
     manager.printInfo();
     auto start = chrono::high_resolution_clock::now();
-    manager.runGPU();
+    manager.runCPU();
+    // manager.validateGPU();
 
     auto end = chrono::high_resolution_clock::now();
 

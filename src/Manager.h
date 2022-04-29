@@ -20,7 +20,10 @@ public:
     Manager(){};
     void initialize(int popSize);
     void runCPU();
-    void runGPU();    
+    void runGPU();
+
+    // Compares GPU output to cpu's
+    void validateGPU();
     void printInfo();
 
 };
