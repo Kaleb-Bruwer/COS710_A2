@@ -7,6 +7,14 @@ using namespace std;
 
 #define castF(a) *(float*)(void*)(&a)
 
+Manager::~Manager(){
+    if(accuracy)
+        delete [] accuracy;
+    if(fitness)
+        delete [] fitness;
+}
+
+
 void Manager::initialize(int p, int maxDepth){
     // Load data
     dataLoader.addFromFile("../data/cleveland.data", 282);
@@ -21,6 +29,7 @@ void Manager::initialize(int p, int maxDepth){
     population.rampedHalfHalf(p, maxDepth);
     population.makeGPUTrees();
     fitness = new float[p];
+    accuracy = new float[p];
 
     // // Initialise shader
     // compShader.initialize();
@@ -41,7 +50,7 @@ void Manager::initialize(int p, int maxDepth){
 void Manager::printInfo(){
     cout << "num Trees: " << popSize << endl;
     cout << "num Training cases: " << trainSize << endl;
-    cout << "num Total cases: " << 899 << endl;
+    cout << "num Total cases: " << numInputs << endl;
     cout << "total nodes (excl nulls): " << population.numNodes << endl;
 
     // int* data = (int*)dataLoader.getGPUData();
@@ -51,11 +60,29 @@ void Manager::printInfo(){
     // cout << endl;
 }
 
+void Manager::printGenerationStats(int genNum){
+    float avgAcc = 0;
+    float avgFit = 0;
 
-void Manager::runCPU(){
-    int* data = (int*)dataLoader.getGPUData();
+    for(int i=0; i<popSize; i++){
+        avgAcc += accuracy[i];
+        avgFit += fitness[i];
+    }
+    avgAcc /= popSize;
+    avgFit /= popSize;
 
-    int* results = new int[numInputs];
+    float bestAcc = 0;
+    for(int i=0; i<popSize; i++){
+        if(accuracy[i] > bestAcc)
+            bestAcc = accuracy[i];
+    }
+
+    cout << "Gen " << genNum << ": ";
+    cout << "Accuracy (avg, best): (" << avgAcc << ", " << bestAcc << "), avg fitness: " << avgFit << endl;
+
+}
+
+void Manager::runCPUGeneration(int* data, int* results){
     for(int i=0; i<popSize; i++){
         // Node* bottom = &population.trees[population.startIndexes[i]];
         int treeSize = population.trees[i].size();
@@ -76,14 +103,31 @@ void Manager::runCPU(){
 
         int correctTest = 0;
         int errorTest = 0;
-        for(int j=0; j<trainSize; j++){
+        for(int j=trainSize; j<numInputs; j++){
             if(data[targetBaseIndex+j] == results[j])
                 correctTest++;
             errorTest += abs(data[targetBaseIndex+j] - results[j]);
         }
         fitness[i] = errorTrain;
+        accuracy[i] = correctTest / (double)(numInputs - trainSize);
     }
+}
+
+
+void Manager::runCPU(int numGen){
+    int* data = (int*)dataLoader.getGPUData();
+
+    int* results = new int[numInputs];
+    for(int i=0; i<numGen; i++){
+        runCPUGeneration(data, results);
+        printGenerationStats(i);
+        vector<int> doomedPool = population.tournamentSelection(fitness);
+        population.applyGenOps(doomedPool);
+    }
+
     delete [] results;
+
+
 }
 
 void Manager::runGPU(){

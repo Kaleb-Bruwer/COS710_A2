@@ -12,12 +12,12 @@ Population::~Population(){
     //     delete [] trees;
 }
 
-void Population::rampedFull(int popSize, int maxDepth){
+void Population::rampedFull(int p, int maxDepth){
     int index = trees.size(); //If there already are trees, this won't be 0
 
     int numDone = 0;
     for(int i=2; i<=maxDepth; i++){
-        int nextStop = ((i-1)*popSize)/(double)(maxDepth - 1);
+        int nextStop = ((i-1)*p)/(double)(maxDepth - 1);
         for(; numDone < nextStop; numDone++){
             trees.push_back(generateFullTree(i));
             numNodes += trees[index].size() - 1; //Tree includes one null
@@ -27,19 +27,21 @@ void Population::rampedFull(int popSize, int maxDepth){
 
     // nextStop may sometimes be broken by a floating point error,
     // this code is to make sure the full amount of trees is always generated
-    for(;numDone < popSize; numDone++){
+    for(;numDone < p; numDone++){
         trees.push_back(generateFullTree(maxDepth));
         numNodes += trees[index].size() - 1;
         index++;
     }
+
+    popSize = index;
 }
 
-void Population::rampedGrow(int popSize, int maxDepth){
+void Population::rampedGrow(int p, int maxDepth){
     int index = trees.size(); //If there already are trees, this won't be 0
 
     int numDone = 0;
     for(int i=2; i<=maxDepth; i++){
-        int nextStop = ((i-1)*popSize)/(double)(maxDepth - 1);
+        int nextStop = ((i-1)*p)/(double)(maxDepth - 1);
         for(; numDone < nextStop; numDone++){
             trees.push_back(generateGrowTree(i));
             numNodes += trees[index].size() - 1; //Tree includes one null
@@ -49,17 +51,18 @@ void Population::rampedGrow(int popSize, int maxDepth){
 
     // nextStop may sometimes be broken by a floating point error,
     // this is to make sure the full amount of trees is always generated
-    for(;numDone < popSize; numDone++){
+    for(;numDone < p; numDone++){
         trees.push_back(generateGrowTree(maxDepth));
         numNodes += trees[index].size() - 1;
         index++;
     }
+    popSize = index;
 }
 
-void Population::rampedHalfHalf(int popSize, int maxDepth){
-    int half = popSize/2;
+void Population::rampedHalfHalf(int p, int maxDepth){
+    int half = p/2;
     rampedFull(half, maxDepth);
-    rampedGrow(popSize-half, maxDepth); //Avoids rounding errors
+    rampedGrow(p-half, maxDepth); //Avoids rounding errors
 }
 
 
@@ -73,22 +76,22 @@ void Population::rampedHalfHalf(int popSize, int maxDepth){
 //     }
 // }
 
-vector<int> Population::tournamentSelection(vector<float> fitness){
+vector<int> Population::tournamentSelection(float* fitness){
     vector<int> result;
 
     // Randomize evaluation order
-    int numTrees = trees.size();
+    int popSize = trees.size();
 
-    int* order = new int[numTrees];
-    for(int i=0; i<numTrees; i++){
+    int* order = new int[popSize];
+    for(int i=0; i<popSize; i++){
         order[i] = i;
     }
-    shuffle(order, numTrees);
+    shuffle(order, popSize);
 
 
     // Divide into tournaments based on above order
     // Incomplete tournament at end gets ignored
-    int lastFullTournament = (numTrees/tournamentSize)*tournamentSize;
+    int lastFullTournament = (popSize/tournamentSize)*tournamentSize;
 
     int index = 0;
     while(index < lastFullTournament){
@@ -120,6 +123,79 @@ vector<int> Population::tournamentSelection(vector<float> fitness){
     return result;
 }
 
-void applyGenOps(std::vector<int> pool){
-    
+void mutate(std::vector<Node>& tree){
+    // Can't be the null or root node
+    int start = 1;
+    if(tree.size() > 2)
+        start = (rand() % (tree.size() - 2)) + 2;
+
+    NodeReturnType type;
+    switch(tree[start].type){
+        case 0:
+            type = (tree[start].val & 32) ? FLOAT : INT;
+            break;
+        case 1:
+        case 2:
+            type = INT;
+            break;
+        case 3:
+            type = FLOAT;
+            break;
+    }
+
+    // Figure out how far subtree goes
+    int end = start;
+    int unresolved = tree[start].nParameters();
+    while(unresolved > 0){
+        end++;
+        unresolved += (tree[end].nParameters() - 1);
+    }
+
+    // Get new new subtree
+    vector<Node> replacement = generateGrowTree(3, type);
+    int removeLen = end - start + 1;
+    int insertLen = replacement.size() - 1; //excludes starting NULL
+
+    // Make space in tree
+    if(removeLen < insertLen){
+        int dest = end+1 - removeLen + insertLen;
+        tree.resize(tree.size() - removeLen + insertLen);
+        memmove(&tree[dest], &tree[end+1], tree.size() - (end+1));
+    }
+    else if (removeLen > insertLen){
+        int dest = end+1 - removeLen + insertLen;
+        memmove(&tree[dest], &tree[end+1], tree.size() - (end+1));
+        tree.resize(tree.size() - removeLen + insertLen);
+    }
+    memcpy(&tree[start], &replacement[1], insertLen);
+}
+
+
+void Population::applyGenOps(std::vector<int> pool){
+    // For each, select random genetic operator
+
+    // [Crossover, Mutation]
+    const int opWeights[] = {7,1};
+    const int opTotalWeight = 8;
+
+    const int count = sizeof(opWeights)/sizeof(int);
+
+    for(int t : pool){
+        int v = rand() % opTotalWeight;
+        int i;
+        for(i=0; i<count; i++){
+            if(v < opWeights[i])
+            break;
+            v -= opWeights[i];
+        }
+
+        // i is now the operator to be applied
+        switch (1) {
+            case 0: //crossover
+                break;
+            case 1: //mutation
+                mutate(trees[t]);
+                break;
+        }
+    }
 }

@@ -15,11 +15,18 @@ private:
     int trainSize = 700;
 
     float* fitness = 0;
+    float* accuracy = 0;
+
+    // Looks at fitness and accuracy
+    void printGenerationStats(int genNum);
+
+    void runCPUGeneration(int* data, int* results);
 
 public:
     Manager(){};
+    ~Manager();
     void initialize(int popSize, int maxDepth = 10);
-    void runCPU();
+    void runCPU(int numGen);
     void runGPU();
 
     // Compares GPU output to cpu's

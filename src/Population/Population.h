@@ -9,6 +9,7 @@ class Population{
 public:
     // Node* trees = 0;
     std::vector<std::vector<Node>> trees;
+    int popSize = 0;
 
     GPUNode* gpuTrees = 0;
     // std::vector<unsigned int> startIndexes;
@@ -26,8 +27,11 @@ public:
 
     // clones best performers over worst-performers
     // returns indexes of these clones, which is the pool for genetic operators
-    std::vector<int> tournamentSelection(std::vector<float> fitness);
+    // Input aArray must be of size popSize
+    std::vector<int> tournamentSelection(float* fitness);
 
     void applyGenOps(std::vector<int> pool);
 
 };
+
+void mutate(std::vector<Node>& tree);

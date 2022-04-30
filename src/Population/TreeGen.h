@@ -19,4 +19,4 @@ inline bool pickFunc(){
 struct Node getRandTerminal();
 
 std::vector<struct Node> generateFullTree(unsigned short maxDepth);
-std::vector<struct Node> generateGrowTree(unsigned short maxDepth);
+std::vector<struct Node> generateGrowTree(unsigned short maxDepth, enum NodeReturnType type = INT);

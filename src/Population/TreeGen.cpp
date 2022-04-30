@@ -56,7 +56,9 @@ vector<struct Node> generateFullTree(unsigned short maxDepth){
     return tree;
 }
 
-vector<struct Node> generateGrowTree(unsigned short maxDepth){
+// nextType's default argument is INT, it is changeable for the sake of generating
+// mutations
+vector<struct Node> generateGrowTree(unsigned short maxDepth, enum NodeReturnType nextType){
     // Prepare array in which tree will be built
     // First node is a NULL (last encountered during execution)
 
@@ -69,7 +71,6 @@ vector<struct Node> generateGrowTree(unsigned short maxDepth){
     int index = 1;
     int currDepth = 0;
     stack<tuple<int, enum NodeReturnType>> unfilled;
-    enum NodeReturnType nextType = INT; //tree result must be INT
 
     while(true){
         if(currDepth < maxDepth - 1 && pickFunc()){
