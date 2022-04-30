@@ -34,4 +34,5 @@ public:
 
 };
 
-void mutate(std::vector<Node>& tree);
+// Returns change to numNodes
+int mutate(std::vector<Node>& tree);

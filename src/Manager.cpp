@@ -79,6 +79,7 @@ void Manager::printGenerationStats(int genNum){
 
     cout << "Gen " << genNum << ": ";
     cout << "Accuracy (avg, best): (" << avgAcc << ", " << bestAcc << "), avg fitness: " << avgFit << endl;
+    cout << "Num nodes: " << population.numNodes << endl;
 
 }
 

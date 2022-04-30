@@ -123,7 +123,8 @@ vector<int> Population::tournamentSelection(float* fitness){
     return result;
 }
 
-void mutate(std::vector<Node>& tree){
+int mutate(std::vector<Node>& tree){
+    int numNodes = -tree.size();
     // Can't be the null or root node
     int start = 1;
     if(tree.size() > 2)
@@ -159,6 +160,8 @@ void mutate(std::vector<Node>& tree){
     // This should be optimized effectively with memmove operations
     tree.erase(tree.begin()+start, tree.begin() + end + 1);
     tree.insert(tree.begin()+start, replacement.begin() + 1, replacement.end());
+
+    return numNodes + tree.size();
 }
 
 
@@ -168,10 +171,12 @@ void Population::applyGenOps(std::vector<int> pool){
     // [Crossover, Mutation]
     const int opWeights[] = {7,1};
     const int opTotalWeight = 8;
-
     const int count = sizeof(opWeights)/sizeof(int);
 
+
+
     for(int t : pool){
+        // Pick operator to apply
         int v = rand() % opTotalWeight;
         int i;
         for(i=0; i<count; i++){
@@ -180,12 +185,12 @@ void Population::applyGenOps(std::vector<int> pool){
             v -= opWeights[i];
         }
 
-        // i is now the operator to be applied
-        switch (1) {
+        // Apply selected operator (i)
+        switch (i) {
             case 0: //crossover
                 break;
             case 1: //mutation
-                mutate(trees[t]);
+                numNodes += mutate(trees[t]);
                 break;
         }
     }
