@@ -28,4 +28,6 @@ public:
     // returns indexes of these clones, which is the pool for genetic operators
     std::vector<int> tournamentSelection(std::vector<float> fitness);
 
+    void applyGenOps(std::vector<int> pool);
+
 };

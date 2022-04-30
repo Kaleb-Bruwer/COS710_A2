@@ -13,50 +13,55 @@ Population::~Population(){
 }
 
 void Population::rampedFull(int popSize, int maxDepth){
-    unsigned int filledSize = 0;
-    vector<Node> treesVec; //consecutively stored
-
-    trees.resize(popSize);
+    int index = trees.size(); //If there already are trees, this won't be 0
 
     int numDone = 0;
     for(int i=2; i<=maxDepth; i++){
         int nextStop = ((i-1)*popSize)/(double)(maxDepth - 1);
         for(; numDone < nextStop; numDone++){
-            trees[numDone] = generateFullTree(i);
-            numNodes+= trees[numDone].size() - 1; //Tree includes one null
+            trees.push_back(generateFullTree(i));
+            numNodes += trees[index].size() - 1; //Tree includes one null
+            index++;
         }
     }
 
     // nextStop may sometimes be broken by a floating point error,
-    // this is to make sure the full amount of trees is always generated
+    // this code is to make sure the full amount of trees is always generated
     for(;numDone < popSize; numDone++){
-        trees[numDone] = generateFullTree(maxDepth);
-        numNodes+= trees[numDone].size() - 1;
+        trees.push_back(generateFullTree(maxDepth));
+        numNodes += trees[index].size() - 1;
+        index++;
     }
 }
 
 void Population::rampedGrow(int popSize, int maxDepth){
-    unsigned int filledSize = 0;
-    vector<Node> treesVec; //consecutively stored
-
-    trees.resize(popSize);
+    int index = trees.size(); //If there already are trees, this won't be 0
 
     int numDone = 0;
     for(int i=2; i<=maxDepth; i++){
         int nextStop = ((i-1)*popSize)/(double)(maxDepth - 1);
         for(; numDone < nextStop; numDone++){
-            trees[numDone] = generateGrowTree(i);
-            numNodes+= trees[numDone].size() - 1; //Tree includes one null
+            trees.push_back(generateGrowTree(i));
+            numNodes += trees[index].size() - 1; //Tree includes one null
+            index++;
         }
     }
 
     // nextStop may sometimes be broken by a floating point error,
     // this is to make sure the full amount of trees is always generated
     for(;numDone < popSize; numDone++){
-        trees[numDone] = generateGrowTree(maxDepth);
-        numNodes+= trees[numDone].size() - 1;
+        trees.push_back(generateGrowTree(maxDepth));
+        numNodes += trees[index].size() - 1;
+        index++;
     }
 }
+
+void Population::rampedHalfHalf(int popSize, int maxDepth){
+    int half = popSize/2;
+    rampedFull(half, maxDepth);
+    rampedGrow(popSize-half, maxDepth); //Avoids rounding errors
+}
+
 
 // void Population::makeGPUTrees(){
 //     if(!trees)
@@ -113,4 +118,8 @@ vector<int> Population::tournamentSelection(vector<float> fitness){
     }
 
     return result;
+}
+
+void applyGenOps(std::vector<int> pool){
+    
 }

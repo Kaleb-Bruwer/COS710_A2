@@ -21,7 +21,7 @@ using namespace std;
 int main(){
 
     Manager manager;
-    manager.initialize(3000, 10);
+    manager.initialize(3000, 20);
 
     manager.printInfo();
     auto start = chrono::high_resolution_clock::now();

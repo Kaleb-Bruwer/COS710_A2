@@ -18,7 +18,7 @@ void Manager::initialize(int p, int maxDepth){
 
     // Generate initial population
     popSize = p;
-    population.rampedGrow(p, maxDepth);
+    population.rampedHalfHalf(p, maxDepth);
     population.makeGPUTrees();
     fitness = new float[p];
 
@@ -40,7 +40,8 @@ void Manager::initialize(int p, int maxDepth){
 
 void Manager::printInfo(){
     cout << "num Trees: " << popSize << endl;
-    cout << "num Training case: " << trainSize << endl;
+    cout << "num Training cases: " << trainSize << endl;
+    cout << "num Total cases: " << 899 << endl;
     cout << "total nodes (excl nulls): " << population.numNodes << endl;
 
     // int* data = (int*)dataLoader.getGPUData();
