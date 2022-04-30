@@ -14,10 +14,14 @@ public:
     // std::vector<unsigned int> startIndexes;
     unsigned int numNodes = 0;
 
+    int tournamentSize = 5;
+
     Population(){};
     ~Population();
 
     void rampedFull(int popSize, int maxDepth);
+    void rampedGrow(int popSize, int maxDepth);
+    void rampedHalfHalf(int popSize, int maxDepth);
     void makeGPUTrees(){};
 
     // clones best performers over worst-performers

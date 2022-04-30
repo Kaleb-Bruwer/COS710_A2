@@ -18,7 +18,7 @@ void Manager::initialize(int p, int maxDepth){
 
     // Generate initial population
     popSize = p;
-    population.rampedFull(p, maxDepth);
+    population.rampedGrow(p, maxDepth);
     population.makeGPUTrees();
     fitness = new float[p];
 
