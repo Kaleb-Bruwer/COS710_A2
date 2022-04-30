@@ -156,18 +156,9 @@ void mutate(std::vector<Node>& tree){
     int removeLen = end - start + 1;
     int insertLen = replacement.size() - 1; //excludes starting NULL
 
-    // Make space in tree
-    if(removeLen < insertLen){
-        int dest = end+1 - removeLen + insertLen;
-        tree.resize(tree.size() - removeLen + insertLen);
-        memmove(&tree[dest], &tree[end+1], tree.size() - (end+1));
-    }
-    else if (removeLen > insertLen){
-        int dest = end+1 - removeLen + insertLen;
-        memmove(&tree[dest], &tree[end+1], tree.size() - (end+1));
-        tree.resize(tree.size() - removeLen + insertLen);
-    }
-    memcpy(&tree[start], &replacement[1], insertLen);
+    // This should be optimized effectively with memmove operations
+    tree.erase(tree.begin()+start, tree.begin() + end + 1);
+    tree.insert(tree.begin()+start, replacement.begin() + 1, replacement.end());
 }
 
 
