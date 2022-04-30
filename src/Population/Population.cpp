@@ -123,34 +123,68 @@ vector<int> Population::tournamentSelection(float* fitness){
     return result;
 }
 
-int mutate(std::vector<Node>& tree){
-    int numNodes = -tree.size();
-    // Can't be the null or root node
-    int start = 1;
-    if(tree.size() > 2)
-        start = (rand() % (tree.size() - 2)) + 2;
+tuple<int, int> randSubtree(const vector<Node>& tree, enum NodeReturnType type){
+    if(type == NONE){
+        int start = 1;
+        if(tree.size() > 2)
+            start = (rand() % (tree.size() - 2)) + 2;
 
-    NodeReturnType type;
-    switch(tree[start].type){
-        case 0:
-            type = (tree[start].val & 32) ? FLOAT : INT;
-            break;
-        case 1:
-        case 2:
-            type = INT;
-            break;
-        case 3:
-            type = FLOAT;
-            break;
+        // Figure out how far subtree goes
+        int end = start;
+        int unresolved = tree[start].nParameters();
+        while(unresolved > 0){
+            end++;
+            unresolved += (tree[end].nParameters() - 1);
+        }
+
+        return make_tuple(start, end);
     }
 
-    // Figure out how far subtree goes
+    int start=1;
+    if(tree.size() > 2){
+        start = (rand() % (tree.size() - 2)) + 2;
+    }
+    else{
+        if(tree[start].getReturnType() != type)
+            return make_tuple(-1, -1); //Can't recover if tree is too small
+    }
+
+    int s = start;
+    bool dir = true;
+    while(tree[start].getReturnType() != type){
+        if(dir){
+            start++;
+            if(start == tree.size()){
+                dir = false;
+                start = s-1;
+            }
+        }
+        else{
+            start--;
+            if(start == 0)
+                return make_tuple(-1, -1); //Doesn't contain node of type
+        }
+    }
+
     int end = start;
     int unresolved = tree[start].nParameters();
     while(unresolved > 0){
         end++;
         unresolved += (tree[end].nParameters() - 1);
     }
+
+    return make_tuple(start, end);
+}
+
+int mutate(vector<Node>& tree){
+    int numNodes = -tree.size();
+
+    tuple<int,int> subtree = randSubtree(tree);
+    int start = get<0>(subtree);
+    int end = get<1>(subtree);
+
+
+    NodeReturnType type = tree[start].getReturnType();
 
     // Get new new subtree
     vector<Node> replacement = generateGrowTree(3, type);
@@ -164,6 +198,38 @@ int mutate(std::vector<Node>& tree){
     return numNodes + tree.size();
 }
 
+void crossover(vector<Node>& lhs, vector<Node>& rhs){
+    tuple<int,int> subtreeL, subtreeR;
+
+    subtreeL = randSubtree(lhs);
+    NodeReturnType type = lhs[get<0>(subtreeL)].getReturnType();
+
+    subtreeR = randSubtree(rhs, type);
+
+    if(get<0>(subtreeR) == -1){
+        subtreeR = randSubtree(rhs);
+        NodeReturnType type = rhs[get<0>(subtreeR)].getReturnType();
+
+        subtreeL = randSubtree(lhs, type);
+
+        //This should be unreachable since both trees have at least one INT node
+        if(get<0>(subtreeL) == -1){
+            return;
+        }
+    }
+    // Can assume valid crossover points from here
+
+    // A pretty standard swap, but with a messy syntax
+    vector<Node> temp(lhs.begin() + get<0>(subtreeL), lhs.begin() + get<1>(subtreeL) + 1);
+    lhs.erase(lhs.begin() + get<0>(subtreeL), lhs.begin() + get<1>(subtreeL) + 1);
+    lhs.insert(lhs.begin() + get<0>(subtreeL), rhs.begin() + get<0>(subtreeR),
+            rhs.begin() + get<1>(subtreeR) + 1);
+
+    rhs.erase(rhs.begin() + get<0>(subtreeR),rhs.begin() + get<1>(subtreeR) + 1);
+    rhs.insert(rhs.begin() + get<0>(subtreeR), temp.begin(), temp.end());
+
+}
+
 
 void Population::applyGenOps(std::vector<int> pool){
     // For each, select random genetic operator
@@ -173,7 +239,7 @@ void Population::applyGenOps(std::vector<int> pool){
     const int opTotalWeight = 8;
     const int count = sizeof(opWeights)/sizeof(int);
 
-
+    vector<int> crossoverPool;
 
     for(int t : pool){
         // Pick operator to apply
@@ -188,10 +254,17 @@ void Population::applyGenOps(std::vector<int> pool){
         // Apply selected operator (i)
         switch (i) {
             case 0: //crossover
+                crossoverPool.push_back(t);
                 break;
             case 1: //mutation
                 numNodes += mutate(trees[t]);
                 break;
         }
     }
+
+    // Odd number ignored
+    for(int i=0; i+1<crossoverPool.size(); i+= 2){
+        crossover(trees[crossoverPool[i]], trees[crossoverPool[i+1]]);
+    }
+
 }

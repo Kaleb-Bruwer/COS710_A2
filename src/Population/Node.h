@@ -29,13 +29,25 @@ public:
         return (type << 6) & val;
     };
 
-    unsigned int nParameters(){
+    unsigned int nParameters() const{
         if(type != 0)
             return 0;
         if(val == 6 || val == 37)
             return 1;
         return 2;
     };
+
+    enum NodeReturnType getReturnType() const{
+        switch(type){
+            case 0:
+                return (val & 32) ? FLOAT : INT;
+            case 1:
+            case 2:
+                return INT;
+            case 3:
+                return FLOAT;
+        }
+    }
 
 };
 
@@ -61,8 +73,8 @@ FLOAT:
 // Making the following functions inline should speed up mutation
 
 inline struct Node randIntFunc(){
-    const int intWeights[] = {1,1,0,1,0,2};
-    const int intTotalWeight = 5;
+    const int intWeights[] = {1,1,0,1,1,2};
+    const int intTotalWeight = 6;
     const int count = sizeof(intWeights)/sizeof(int);
 
     int v = rand() % intTotalWeight;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <tuple>
 
 #include "Node.h"
 #include "GPUNode.h"
@@ -15,7 +16,7 @@ public:
     // std::vector<unsigned int> startIndexes;
     unsigned int numNodes = 0;
 
-    int tournamentSize = 5;
+    int tournamentSize = 4;
 
     Population(){};
     ~Population();
@@ -34,5 +35,8 @@ public:
 
 };
 
+std::tuple<int, int> randSubtree(const std::vector<Node>& tree, enum NodeReturnType type = NONE);
+
 // Returns change to numNodes
 int mutate(std::vector<Node>& tree);
+void crossover(std::vector<Node>& lhs, std::vector<Node>& rhs);
