@@ -16,7 +16,7 @@ public:
     // std::vector<unsigned int> startIndexes;
     unsigned int numNodes = 0;
 
-    int tournamentSize = 4;
+    int tournamentSize = 2;
 
     Population(){};
     ~Population();

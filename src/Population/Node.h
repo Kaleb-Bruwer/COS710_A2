@@ -112,6 +112,14 @@ inline struct Node randFloatFunc(){
     return result;
 };
 
+const int constChance = 200;
+
+inline struct Node randConst(){
+    Node result{1,0};
+    result.val = rand();
+    return result;
+};
+
 inline struct Node randTerminal(enum NodeReturnType t){
     const int numFloats = 8;
     const int numInts = 61; //excludes target
@@ -121,6 +129,8 @@ inline struct Node randTerminal(enum NodeReturnType t){
 
     switch(t){
         case INT:
+            if(rand() % 1000 < constChance)
+                return randConst();
             result.type = 2;
             result.val = rand() % numInts;
             if(result.val >= targetPos)

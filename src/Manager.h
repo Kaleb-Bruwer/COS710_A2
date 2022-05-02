@@ -20,7 +20,8 @@ private:
     // Looks at fitness and accuracy
     void printGenerationStats(int genNum);
 
-    void runCPUGeneration(int* data, int* results);
+    void runCPUGeneration(int* data);
+    void runCPUThread(int* data, int start, int end);
 
 public:
     Manager(){};

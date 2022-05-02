@@ -2,6 +2,7 @@
 
 #include "cpuExec.h"
 #include <iostream>
+#include <thread>
 
 using namespace std;
 
@@ -83,8 +84,10 @@ void Manager::printGenerationStats(int genNum){
 
 }
 
-void Manager::runCPUGeneration(int* data, int* results){
-    for(int i=0; i<popSize; i++){
+void Manager::runCPUThread(int* data, int start, int end){
+    int* results = new int[numInputs];
+
+    for(int i=start; i<end; i++){
         // Node* bottom = &population.trees[population.startIndexes[i]];
         int treeSize = population.trees[i].size();
         Node* bottom = &population.trees[i][treeSize-1];
@@ -95,40 +98,59 @@ void Manager::runCPUGeneration(int* data, int* results){
 
         int targetBaseIndex = 899*(8+46);
         int correctTrain = 0;
-        int errorTrain = 0;
+        float errorTrain = 0;
         for(int j=0; j<trainSize; j++){
             if(data[targetBaseIndex+j] == results[j])
                 correctTrain++;
-            errorTrain += abs(data[targetBaseIndex+j] - results[j]);
+            errorTrain += pow(abs(data[targetBaseIndex+j] - results[j]),2);
         }
 
         int correctTest = 0;
-        int errorTest = 0;
+        float errorTest = 0;
         for(int j=trainSize; j<numInputs; j++){
             if(data[targetBaseIndex+j] == results[j])
                 correctTest++;
-            errorTest += abs(data[targetBaseIndex+j] - results[j]);
+            errorTest += pow(abs(data[targetBaseIndex+j] - results[j]),2);
         }
         fitness[i] = errorTrain;
         accuracy[i] = correctTest / (double)(numInputs - trainSize);
     }
+    delete [] results;
+}
+
+
+void Manager::runCPUGeneration(int* data){
+    // runCPUThread(data, results, 0, popSize);
+
+    const int nThreads = 64;
+
+    thread** t = new thread*[nThreads];
+
+    int start = 0;
+    for(int i=0; i<nThreads-1; i++){
+        int end = (popSize/nThreads) * i;
+        t[i] = new thread(&Manager::runCPUThread, this, data, start, end);
+        start = end;
+    }
+    t[nThreads-1] = new thread(&Manager::runCPUThread, this, data, start, popSize);
+
+    for(int i=0; i<nThreads; i++){
+        t[i]->join();
+        delete t[i];
+    }
+    delete [] t;
 }
 
 
 void Manager::runCPU(int numGen){
     int* data = (int*)dataLoader.getGPUData();
 
-    int* results = new int[numInputs];
     for(int i=0; i<numGen; i++){
-        runCPUGeneration(data, results);
+        runCPUGeneration(data);
         printGenerationStats(i);
         vector<int> doomedPool = population.tournamentSelection(fitness);
         population.applyGenOps(doomedPool);
     }
-
-    delete [] results;
-
-
 }
 
 void Manager::runGPU(){
