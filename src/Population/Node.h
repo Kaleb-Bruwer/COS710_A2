@@ -18,6 +18,8 @@ public:
     //either input index or function number
     unsigned char val  :6;
 
+    enum NodeReturnType getParamType(int);
+
     enum NodeReturnType getParam1();
     enum NodeReturnType getParam2();
 
@@ -34,6 +36,8 @@ public:
             return 0;
         if(val == 6 || val == 37)
             return 1;
+        if(val == 7 || val == 38)
+            return 3;
         return 2;
     };
 
@@ -62,19 +66,24 @@ INT:
     04 (3) : /(INT, INT)
     05 (4) : mod(INT, INT)
     06 (5) : round(FLOAT)
+    07 (6) : IF(INT, INT, INT)
+BOOL:
+    17 (0) : ==(INT, INT)
+    18 (1) : ==(FLOAT, FLOAT)
 FLOAT:
     33 (0) : +(FLOAT, FLOAT)
     34 (1) : -(FLOAT, FLOAT)
     35 (2) : *(FLOAT, FLOAT)
     36 (3) : /(FLOAT, FLOAT)
     37 (4) : toFloat(INT)
+    38 (5) : IF(INT, FLOAT, FLOAT)
 */
 
 // Making the following functions inline should speed up mutation
 
 inline struct Node randIntFunc(){
-    const int intWeights[] = {1,1,0,1,1,2};
-    const int intTotalWeight = 6;
+    const int intWeights[] = {1,1,0,1,1,2,1};
+    const int intTotalWeight = 7;
     const int count = sizeof(intWeights)/sizeof(int);
 
     int v = rand() % intTotalWeight;
@@ -93,7 +102,7 @@ inline struct Node randIntFunc(){
 };
 
 inline struct Node randFloatFunc(){
-    const int floatWeights[] = {1,1,0,1,3};
+    const int floatWeights[] = {1,1,0,1,3,0};
     const int floatTotalWeight = 6;
     const int count = sizeof(floatWeights)/sizeof(int);
 

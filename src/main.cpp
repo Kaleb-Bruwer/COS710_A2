@@ -10,10 +10,8 @@
 REMOVED 21 corrupt records from cleveland.data
 
 TODO:
-* Multithread-compatible random     // default_random_engine engine(23456787);
-* selection
-* restructure trees on cpu side (separate vectors to speed up genetic operators)
-* mutation, crossover
+    BOOL type + functions
+    IF_EMPTY generation pattern (returns val if it isn't empty, else some subtree)
 */
 
 using namespace std;
@@ -21,11 +19,11 @@ using namespace std;
 int main(){
 
     Manager manager;
-    manager.initialize(10000, 8);
+    manager.initialize(50000, 5);
 
     manager.printInfo();
     auto start = chrono::high_resolution_clock::now();
-    manager.runCPU(100);
+    manager.runCPU(300);
     // manager.validateGPU();
 
     auto end = chrono::high_resolution_clock::now();

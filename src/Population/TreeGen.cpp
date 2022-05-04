@@ -15,9 +15,7 @@ vector<struct Node> generateFullTree(unsigned short maxDepth){
     // Prepare array in which tree will be built
     // First node is a NULL (last encountered during execution)
 
-    // numNodes initialized to max possible size, will be resized at end
-    int numNodes = pow(2, maxDepth + 1);
-    vector<struct Node> tree(numNodes);
+    vector<struct Node> tree(1);
 
     // Populate tree
     tree[0] = Node{0,0};
@@ -29,18 +27,24 @@ vector<struct Node> generateFullTree(unsigned short maxDepth){
     while(true){
         if(currDepth < maxDepth - 1){
             // Funciton node
-            tree[index] = randFunc(nextType);
+            tree.push_back(randFunc(nextType));
             currDepth++;
-            nextType = tree[index].getParam1();
-            enum NodeReturnType type2 = tree[index].getParam2();
+            nextType = tree[index].getParamType(0);
+            enum NodeReturnType type2 = tree[index].getParamType(1);
             // Not all functions take 2 parameters
-            if(type2 != NONE)
+            if(type2 != NONE){
+                // IF has 3 parameters
+                enum NodeReturnType type3 = tree[index].getParamType(2);
+                if(type3 != NONE){
+                    unfilled.push(make_tuple(currDepth, type3));
+                }
                 unfilled.push(make_tuple(currDepth, type2));
+            }
             index++;
         }
         else{
             // Terminal node
-            tree[index] = randTerminal(nextType);
+            tree.push_back(randTerminal(nextType));
             index++;
             if(!unfilled.empty()){
                 tuple<int, enum NodeReturnType> t = unfilled.top();
@@ -51,8 +55,6 @@ vector<struct Node> generateFullTree(unsigned short maxDepth){
             else break;
         }
     }
-
-    tree.resize(index);
     return tree;
 }
 
@@ -63,8 +65,7 @@ vector<struct Node> generateGrowTree(unsigned short maxDepth, enum NodeReturnTyp
     // First node is a NULL (last encountered during execution)
 
     // numNodes initialized to max possible size, will be resized at end
-    int numNodes = pow(2, maxDepth + 1);
-    vector<struct Node> tree(numNodes);
+    vector<struct Node> tree(1);
 
     // Populate tree
     tree[0] = Node{0,0};
@@ -75,18 +76,24 @@ vector<struct Node> generateGrowTree(unsigned short maxDepth, enum NodeReturnTyp
     while(true){
         if(currDepth < maxDepth - 1 && pickFunc()){
             // Funciton node
-            tree[index] = randFunc(nextType);
+            tree.push_back(randFunc(nextType));
             currDepth++;
-            nextType = tree[index].getParam1();
-            enum NodeReturnType type2 = tree[index].getParam2();
+            nextType = tree[index].getParamType(0);
+            enum NodeReturnType type2 = tree[index].getParamType(1);
             // Not all functions take 2 parameters
-            if(type2 != NONE)
+            if(type2 != NONE){
+                // IF has 3 parameters
+                enum NodeReturnType type3 = tree[index].getParamType(2);
+                if(type3 != NONE){
+                    unfilled.push(make_tuple(currDepth, type3));
+                }
                 unfilled.push(make_tuple(currDepth, type2));
+            }
             index++;
         }
         else{
             // Terminal node
-            tree[index] = randTerminal(nextType);
+            tree.push_back(randTerminal(nextType));
             index++;
             if(!unfilled.empty()){
                 tuple<int, enum NodeReturnType> t = unfilled.top();
@@ -97,7 +104,5 @@ vector<struct Node> generateGrowTree(unsigned short maxDepth, enum NodeReturnTyp
             else break;
         }
     }
-
-    tree.resize(index);
     return tree;
 }
