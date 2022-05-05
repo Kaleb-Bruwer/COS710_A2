@@ -4,6 +4,8 @@
 #include <iostream>
 #include <thread>
 
+#include <Fitness.h>
+
 using namespace std;
 
 #define castF(a) *(float*)(void*)(&a)
@@ -97,23 +99,10 @@ void Manager::runCPUThread(int* data, int start, int end){
         }
 
         int targetBaseIndex = 899*(8+46);
-        int correctTrain = 0;
-        float errorTrain = 0;
-        for(int j=0; j<trainSize; j++){
-            if(data[targetBaseIndex+j] == results[j])
-                correctTrain++;
-            errorTrain += pow(abs(data[targetBaseIndex+j] - results[j]),2);
-        }
+        accuracy[i] = hitrate(&data[targetBaseIndex+trainSize],
+                &results[trainSize], numInputs - trainSize);
 
-        int correctTest = 0;
-        float errorTest = 0;
-        for(int j=trainSize; j<numInputs; j++){
-            if(data[targetBaseIndex+j] == results[j])
-                correctTest++;
-            errorTest += pow(abs(data[targetBaseIndex+j] - results[j]),2);
-        }
-        fitness[i] = errorTrain;
-        accuracy[i] = correctTest / (double)(numInputs - trainSize);
+        fitness[i] = mean_squared_error(&data[targetBaseIndex], results, trainSize);
     }
     delete [] results;
 }

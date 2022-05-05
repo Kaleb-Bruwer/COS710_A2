@@ -27,6 +27,7 @@ add_Executable(main
     src/Population/GPUNode.cpp
     src/Manager.cpp
     src/cpuExec.cpp
+	src/Fitness.cpp
 )
 
 target_link_libraries(main ${OPENGL_LIBRARY} glfw GLEW_1130)
