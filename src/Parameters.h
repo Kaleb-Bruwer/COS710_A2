@@ -5,7 +5,12 @@ const int INIT_DEPTH = 5;
 const int GENERATIONS = 3000;
 
 const int TRAIN_COUNT = 700;
-const int TOURNAMENT_SIZE = 2;
+
+//size must be >= winners*(multiplication+1)
+const int TOURNAMENT_SIZE = 4;
+const int TOURNAMENT_WINNERS = 1;
+const int TOURNAMENT_MULTIPLICATION = 1;
+
 
 const int CONST_CHANCE = 200; //fraction out of 1000
 const int GROW_RATE = 750;

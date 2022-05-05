@@ -11,8 +11,12 @@
 REMOVED 21 corrupt records from cleveland.data
 
 TODO:
-    BOOL type + functions
-    IF_EMPTY generation pattern (returns val if it isn't empty, else some subtree)
+    Better selection
+    Try more fitness functions
+    A shrinking operator? Or regularisation?
+    Report more numbers
+    Write report to file
+    More BOOL functions?
 */
 
 using namespace std;

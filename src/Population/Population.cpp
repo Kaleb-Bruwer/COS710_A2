@@ -1,6 +1,7 @@
 #include "Population.h"
 
 #include <cstring>
+#include <tuple>
 
 #include <Helpers.h>
 #include <Parameters.h>
@@ -100,33 +101,93 @@ vector<int> Population::tournamentSelection(float* fitness){
     // Incomplete tournament at end gets ignored
     int lastFullTournament = (popSize/TOURNAMENT_SIZE)*TOURNAMENT_SIZE;
 
-    int index = 0;
-    while(index < lastFullTournament){
-        float best = fitness[index];
-        float worst = fitness[index];
-        int bestIndex = index;
-        int worstIndex = index;
-        index++;
+    /*
+    Need to select top n and bottom n*m performers
+    Keep ordered list of best n so far: tuple<score, index>
+    For 1st n records, insert into list (keep ordered)
+    After that, compare with last in list(worst of the best) and work up from there
 
+    */
 
-        for(int j=1; j<TOURNAMENT_SIZE; j++){
-            if(best > fitness[index]){
-                best = fitness[index];
-                bestIndex = index;
+    int baseIndex = 0;
+    while(baseIndex < lastFullTournament){
+        vector<tuple<float, int>> best;
+        // Initialise best list with first elements from tournament
+        for(int i=0; i<TOURNAMENT_WINNERS; i++){
+            // evaluation order is according to order array, not linearly
+            int fIndex = order[baseIndex + i];
+            tuple<float,int> t = make_tuple(fitness[fIndex], fIndex);
+
+            // Find index in list
+            // List should be small, so a linear search is fine
+            int j=0;
+            for(tuple<float, int> b : best){
+                if(get<0>(b) < get<0>(t))
+                    j++;
+                else break;
             }
-            if(worst < fitness[index]){
-                worst = fitness[index];
-                worstIndex = index;
-            }
-            index++;
+            best.insert(best.begin() + j, t);
         }
 
-        // Replace losers with clones of winners
-        trees[worstIndex] = trees[bestIndex];
-        result.push_back(worstIndex);
+        // Run through rest of tournament
+        for(int i=TOURNAMENT_WINNERS; i<TOURNAMENT_SIZE; i++){
+            int fIndex = order[baseIndex + i];
 
+            // Find insert location, if any
+            int j = TOURNAMENT_WINNERS;
+            while(fitness[fIndex] < get<0>(best[j-1]) && j > 0)
+                j--;
+
+            if(j < TOURNAMENT_WINNERS){
+                tuple<float,int> t = make_tuple(fitness[fIndex], fIndex);
+                best.insert(best.begin()+j, t);
+                best.resize(TOURNAMENT_WINNERS);
+            }
+        }
+
+        // Now repeat for worst performers
+        vector<tuple<float, int>> worst;
+        int numLosers = TOURNAMENT_WINNERS*TOURNAMENT_MULTIPLICATION;
+        for(int i=0; i<numLosers; i++){
+            int fIndex = order[baseIndex + i];
+            tuple<float,int> t = make_tuple(fitness[fIndex], fIndex);
+
+            int j=0;
+            for(tuple<float, int> b : worst){
+                if(get<0>(b) >= get<0>(t))
+                    j++;
+                else break;
+            }
+            worst.insert(worst.begin() + j, t);
+        }
+
+        for(int i=numLosers; i<TOURNAMENT_SIZE; i++){
+            int fIndex = order[baseIndex + i];
+
+            int j = numLosers;
+            while(fitness[fIndex] >= get<0>(worst[j-1]) && j > 0)
+                j--;
+
+            if(j < numLosers){
+                tuple<float,int> t = make_tuple(fitness[fIndex], fIndex);
+                worst.insert(worst.begin()+j, t);
+                worst.resize(numLosers);
+            }
+        }
+
+        // best and worst lists are now populated
+        int w = 0;
+        for(int i=0; i<TOURNAMENT_WINNERS; i++){
+            int bIndex = get<1>(best[i]);
+            for(int j=0; j<TOURNAMENT_MULTIPLICATION; j++){
+                int wIndex = get<1>(worst[w]);
+                w++;
+                result.push_back(wIndex);
+                trees[wIndex] = trees[bIndex];
+            }
+        }
+        baseIndex += TOURNAMENT_SIZE;
     }
-
     return result;
 }
 
@@ -297,4 +358,14 @@ void Population::applyGenOps(std::vector<int> pool){
         crossover(trees[crossoverPool[i]], trees[crossoverPool[i+1]]);
     }
 
+}
+
+unsigned int Population::recalcNumNodes(){
+    unsigned int result = 0;
+    for(int i=0; i < trees.size(); i++){
+        result += trees[i].size();
+    }
+    result -= trees.size(); //Exclude nulls (one per tree)
+    numNodes = result;
+    return result;
 }

@@ -32,6 +32,7 @@ public:
     std::vector<int> tournamentSelection(float* fitness);
 
     void applyGenOps(std::vector<int> pool);
+    unsigned int recalcNumNodes();
 
 };
 

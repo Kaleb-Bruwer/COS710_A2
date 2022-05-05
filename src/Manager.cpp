@@ -150,6 +150,7 @@ void Manager::runCPU(int numGen){
         printGenerationStats(i);
         vector<int> doomedPool = population.tournamentSelection(fitness);
         population.applyGenOps(doomedPool);
+        population.recalcNumNodes();
     }
 }
 
