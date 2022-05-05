@@ -5,9 +5,9 @@
 
 // Not to be confused with Node.type
 enum NodeReturnType{
-    // BOOL, //Maybe later, it complicates things
     INT,
     FLOAT,
+    BOOL,
     NONE //returned by getParam if nothing is taken at that position
 };
 
@@ -31,6 +31,17 @@ public:
         return (type << 6) & val;
     };
 
+    int getConst(){
+        if(val & 32)
+            return val - 64;
+        return val;
+    };
+    void setConst(int v){ //Only works vor v in [-32,31]
+        if(v < 0)
+            v+= 64;
+        val = v & 0x3f;
+    };
+
     unsigned int nParameters() const{
         if(type != 0)
             return 0;
@@ -44,6 +55,7 @@ public:
     enum NodeReturnType getReturnType() const{
         switch(type){
             case 0:
+                // if(val & 16) return BOOL;
                 return (val & 32) ? FLOAT : INT;
             case 1:
             case 2:
@@ -82,8 +94,8 @@ FLOAT:
 // Making the following functions inline should speed up mutation
 
 inline struct Node randIntFunc(){
-    const int intWeights[] = {1,1,0,1,1,2,1};
-    const int intTotalWeight = 7;
+    const int intWeights[] = {1,1,0,1,1,2,0};
+    const int intTotalWeight = 6;
     const int count = sizeof(intWeights)/sizeof(int);
 
     int v = rand() % intTotalWeight;
@@ -124,12 +136,10 @@ inline struct Node randFloatFunc(){
 const int constChance = 200;
 
 inline struct Node randConst(){
-    Node result{1,0};
-    result.val = rand();
-    return result;
+    return Node{1,rand()};
 };
 
-inline struct Node randTerminal(enum NodeReturnType t){
+inline struct Node randTerminal(enum NodeReturnType t, bool allowConst = true){
     const int numFloats = 8;
     const int numInts = 61; //excludes target
     const int targetPos = 46;
@@ -138,7 +148,7 @@ inline struct Node randTerminal(enum NodeReturnType t){
 
     switch(t){
         case INT:
-            if(rand() % 1000 < constChance)
+            if(allowConst && (rand() % 1000 < constChance))
                 return randConst();
             result.type = 2;
             result.val = rand() % numInts;

@@ -37,6 +37,7 @@ int execTree(Node* node, int* data, int r){
 
                 if(!(node[0].val & 32)){ //checks if it's an int or float function
                     switch(node[0].val){
+                        // INT functions
                         case 1: //+
                             result = left + right;
                             break;
@@ -59,6 +60,14 @@ int execTree(Node* node, int* data, int r){
                             break;
                         case 7: //IF
                             result = left ? right : param3;
+                            break;
+                        // BOOL functions
+                        case 17:
+                            result = (left == right);
+                            break;
+                        case 18:
+                            result = (castF(left) == castF(right));
+                            break;
                     }
                 }
                 else{
@@ -94,9 +103,10 @@ int execTree(Node* node, int* data, int r){
                 break;
             }
 
-            case 1: //const
-                compStack.push(node->val);
+            case 1:{ //const
+                compStack.push(node->getConst());
                 break;
+            }
             case 2: //INT
                 compStack.push(data[nRecords*(numFloats + node->val)+r]);
                 break;

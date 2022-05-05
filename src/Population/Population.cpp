@@ -198,6 +198,30 @@ int mutate(vector<Node>& tree){
     return numNodes + tree.size();
 }
 
+int mutateIsEmpty(vector<Node>& tree){
+    int numNodes = -tree.size();
+
+    tuple<int,int> subtree = randSubtree(tree);
+    int start = get<0>(subtree);
+    int end = get<1>(subtree);
+
+
+    NodeReturnType type = tree[start].getReturnType();
+
+    int inIndex = randTerminal(type, false).val;
+
+    // Get new new subtree
+    vector<Node> replacement = isEmpty(type, inIndex);
+    int removeLen = end - start + 1;
+    int insertLen = replacement.size() - 1; //excludes starting NULL
+
+    // This should be optimized effectively with memmove operations
+    tree.erase(tree.begin()+start, tree.begin() + end + 1);
+    tree.insert(tree.begin()+start, replacement.begin() + 1, replacement.end());
+
+    return numNodes + tree.size();
+}
+
 void crossover(vector<Node>& lhs, vector<Node>& rhs){
     tuple<int,int> subtreeL, subtreeR;
 
@@ -234,9 +258,9 @@ void crossover(vector<Node>& lhs, vector<Node>& rhs){
 void Population::applyGenOps(std::vector<int> pool){
     // For each, select random genetic operator
 
-    // [Crossover, Mutation]
-    const int opWeights[] = {7,1};
-    const int opTotalWeight = 8;
+    // [Crossover, Mutation, isEmpty]
+    const int opWeights[] = {9,1,0};
+    const int opTotalWeight = 10;
     const int count = sizeof(opWeights)/sizeof(int);
 
     vector<int> crossoverPool;
@@ -258,6 +282,9 @@ void Population::applyGenOps(std::vector<int> pool){
                 break;
             case 1: //mutation
                 numNodes += mutate(trees[t]);
+                break;
+            case 2:
+                numNodes += mutateIsEmpty(trees[t]);
                 break;
         }
     }

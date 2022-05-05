@@ -10,6 +10,36 @@ struct Node getRandTerminal(){
     return Node{2,0};
 }
 
+vector<struct Node> isEmpty(enum NodeReturnType inType, int inIndex){
+    vector<struct Node> tree(1, Node{0,0});
+
+    Node input{2,inIndex};
+    if(! inType==INT)
+        input.type = 3;
+
+    if(inType == INT){
+        tree.push_back(Node{0, 7});//IF
+        tree.push_back(Node{0,17}); //==
+    }
+    else{
+        tree.push_back(Node{0, 38});//IF
+        tree.push_back(Node{0, 18});//==
+    }
+
+    tree.push_back(input);
+
+    Node neg9 = Node{1,0};
+    neg9.setConst(-9);
+    tree.push_back(neg9);
+
+    vector<struct Node> subtree = generateGrowTree(3, inType);
+    tree.insert(tree.end(), subtree.begin()+1, subtree.end());
+
+    tree.push_back(input);
+
+    return tree;
+}
+
 
 vector<struct Node> generateFullTree(unsigned short maxDepth){
     // Prepare array in which tree will be built

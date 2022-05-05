@@ -19,11 +19,11 @@ using namespace std;
 int main(){
 
     Manager manager;
-    manager.initialize(50000, 5);
+    manager.initialize(5000, 5);
 
     manager.printInfo();
     auto start = chrono::high_resolution_clock::now();
-    manager.runCPU(300);
+    manager.runCPU(3000);
     // manager.validateGPU();
 
     auto end = chrono::high_resolution_clock::now();

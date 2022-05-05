@@ -39,4 +39,5 @@ std::tuple<int, int> randSubtree(const std::vector<Node>& tree, enum NodeReturnT
 
 // Returns change to numNodes
 int mutate(std::vector<Node>& tree);
+int mutateIsEmpty(std::vector<Node>& tree);
 void crossover(std::vector<Node>& lhs, std::vector<Node>& rhs);

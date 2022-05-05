@@ -3,8 +3,11 @@
 using namespace std;
 
 enum NodeReturnType Node::getParamType(int param){
+    if(type != 0)
+        return NONE;
+
     if(param == 0){
-        if(type != 0 || val == 0) //0 parameter nodes
+        if(val == 0) //0 parameter nodes
             return NONE;
         if(val & 32){
             if(val == 37 || val == 38)
@@ -12,18 +15,22 @@ enum NodeReturnType Node::getParamType(int param){
             return FLOAT;
         }
         else{
-            if(val == 6)
+            if(val == 6 || val == 18)
                 return FLOAT;
             return INT;
         }
     }
 
     else if(param == 1){
-        if(type != 0 || val == 0) //0 parameter Nodes
-            return NONE;
-        if(val == 6 || val == 37) //1 parameter functions
-            return NONE;
-
+        switch(val){ //special cases
+            case 0:
+            case 6:
+            case 37:
+                return NONE;
+            case 18:
+                return FLOAT;
+        }
+        //general case
         return (val & 32) ? FLOAT : INT;
     }
 
@@ -32,7 +39,7 @@ enum NodeReturnType Node::getParamType(int param){
         if(val == 7) return INT;
         return NONE;
     }
-    
+
     return NONE;
 }
 
