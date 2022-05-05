@@ -15,6 +15,8 @@ Manager::~Manager(){
         delete [] accuracy;
     if(fitness)
         delete [] fitness;
+    if(trainAcc)
+        delete [] trainAcc;
 }
 
 
@@ -33,6 +35,7 @@ void Manager::initialize(int p, int maxDepth){
     population.makeGPUTrees();
     fitness = new float[p];
     accuracy = new float[p];
+    trainAcc = new float[p];
 
     // // Initialise shader
     // compShader.initialize();
@@ -65,24 +68,31 @@ void Manager::printInfo(){
 
 void Manager::printGenerationStats(int genNum){
     float avgAcc = 0;
+    float avgAccTrain = 0;
     float avgFit = 0;
 
     for(int i=0; i<popSize; i++){
         avgAcc += accuracy[i];
+        avgAccTrain += trainAcc[i];
         avgFit += fitness[i];
     }
     avgAcc /= popSize;
+    avgAccTrain /= popSize;
     avgFit /= popSize;
 
     float bestAcc = 0;
+    float bestAccTrain = 0;
     for(int i=0; i<popSize; i++){
         if(accuracy[i] > bestAcc)
             bestAcc = accuracy[i];
+        if(trainAcc[i] > bestAccTrain)
+            bestAccTrain = trainAcc[i];
     }
 
     cout << "Gen " << genNum << ": ";
     cout << "Accuracy (avg, best): (" << avgAcc << ", " << bestAcc << "), avg fitness: " << avgFit << endl;
-    cout << "Num nodes: " << population.numNodes << endl;
+    cout << "Train Acc (avg, best): (" << avgAccTrain << ", " << bestAccTrain << ") ";
+    cout << "Num nodes: " << population.numNodes << "\n\n";
 
 }
 
@@ -102,7 +112,11 @@ void Manager::runCPUThread(int* data, int start, int end){
         accuracy[i] = hitrate(&data[targetBaseIndex+trainSize],
                 &results[trainSize], numInputs - trainSize);
 
+        trainAcc[i] = hitrate(&data[targetBaseIndex], results, trainSize);
+
         fitness[i] = mean_squared_error(&data[targetBaseIndex], results, trainSize);
+        fitness[i] += treeSize/((float)trainSize);
+
     }
     delete [] results;
 }

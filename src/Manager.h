@@ -19,6 +19,8 @@ private:
     float* fitness = 0;
     float* accuracy = 0;
 
+    float* trainAcc = 0;
+
     // Looks at fitness and accuracy
     void printGenerationStats(int genNum);
 

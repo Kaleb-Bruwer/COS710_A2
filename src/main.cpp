@@ -11,10 +11,6 @@
 REMOVED 21 corrupt records from cleveland.data
 
 TODO:
-    Better selection
-    Try more fitness functions
-    A shrinking operator? Or regularisation?
-    Report more numbers
     Write report to file
     More BOOL functions?
 */

@@ -2,7 +2,7 @@
 
 const int POPULATION = 5000;
 const int INIT_DEPTH = 5;
-const int GENERATIONS = 3000;
+const int GENERATIONS = 750;
 
 const int TRAIN_COUNT = 700;
 
@@ -16,7 +16,7 @@ const int CONST_CHANCE = 200; //fraction out of 1000
 const int GROW_RATE = 750;
 
 // [Crossover, Mutation, isEmpty]
-const int OP_WEIGHTS[] = {9,1,0};
+const int OP_WEIGHTS[] = {8,1,0};
 
 // Function weighths
 // [+, -, *, /, toFloat, IF]

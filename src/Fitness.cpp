@@ -9,7 +9,7 @@ float mean_squared_error(int* target, int* result, int len){
         float loss = pow(target[i] - result[i], 2);
         error += loss;
     }
-    return error;
+    return error/len;
 }
 
 float mean_error(int* target, int* result, int len){
@@ -19,7 +19,7 @@ float mean_error(int* target, int* result, int len){
         float loss = abs(target[i] - result[i]);
         error += loss;
     }
-    return error;
+    return error/len;
 }
 
 float hitrate(int* target, int* result, int len){
