@@ -3,6 +3,7 @@
 #include <chrono>
 #include <random>
 
+#include <Parameters.h>
 #include "Manager.h"
 #include "cpuExec.h"
 
@@ -19,12 +20,11 @@ using namespace std;
 int main(){
 
     Manager manager;
-    manager.initialize(5000, 5);
+    manager.initialize(POPULATION, INIT_DEPTH);
 
     manager.printInfo();
     auto start = chrono::high_resolution_clock::now();
-    manager.runCPU(3000);
-    // manager.validateGPU();
+    manager.runCPU(GENERATIONS);
 
     auto end = chrono::high_resolution_clock::now();
 

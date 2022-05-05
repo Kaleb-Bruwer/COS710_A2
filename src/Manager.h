@@ -4,6 +4,8 @@
 #include <Population/Population.h>
 #include "CompShader.h"
 
+#include <Parameters.h>
+
 class Manager{
 private:
     DataLoader dataLoader;
@@ -12,7 +14,7 @@ private:
 
     int popSize;
     int numInputs = 899;
-    int trainSize = 700;
+    int trainSize = TRAIN_COUNT;
 
     float* fitness = 0;
     float* accuracy = 0;

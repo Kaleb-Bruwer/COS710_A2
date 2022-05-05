@@ -3,6 +3,8 @@
 #include <cstdlib>
 #include <iostream>
 
+#include <Parameters.h>
+
 // Not to be confused with Node.type
 enum NodeReturnType{
     INT,
@@ -94,16 +96,18 @@ FLOAT:
 // Making the following functions inline should speed up mutation
 
 inline struct Node randIntFunc(){
-    const int intWeights[] = {1,1,0,1,1,2,0};
-    const int intTotalWeight = 6;
-    const int count = sizeof(intWeights)/sizeof(int);
+    // I'm hoping the sum of a const array is optimized out, it should be
+    int intTotalWeight = 0;
+    for(int i : INT_WEIGHTS)
+        intTotalWeight+= i;
+    const int count = sizeof(INT_WEIGHTS)/sizeof(int);
 
     int v = rand() % intTotalWeight;
     int i;
     for(i=0; i<count; i++){
-        if(v < intWeights[i])
+        if(v < INT_WEIGHTS[i])
             break;
-        v -= intWeights[i];
+        v -= INT_WEIGHTS[i];
     }
 
     struct Node result;
@@ -114,16 +118,18 @@ inline struct Node randIntFunc(){
 };
 
 inline struct Node randFloatFunc(){
-    const int floatWeights[] = {1,1,0,1,3,0};
-    const int floatTotalWeight = 6;
-    const int count = sizeof(floatWeights)/sizeof(int);
+    // I'm hoping the sum of a const array is optimized out, it should be
+    int floatTotalWeight = 0;
+    for(int i : FLOAT_WEIGHTS)
+        floatTotalWeight+= i;
+    const int count = sizeof(FLOAT_WEIGHTS)/sizeof(int);
 
     int v = rand() % floatTotalWeight;
     int i;
     for(i=0; i<count; i++){
-        if(v < floatWeights[i])
+        if(v < FLOAT_WEIGHTS[i])
             break;
-        v -= floatWeights[i];
+        v -= FLOAT_WEIGHTS[i];
     }
 
     struct Node result;
@@ -132,8 +138,6 @@ inline struct Node randFloatFunc(){
 
     return result;
 };
-
-const int constChance = 200;
 
 inline struct Node randConst(){
     return Node{1,rand()};
@@ -148,7 +152,7 @@ inline struct Node randTerminal(enum NodeReturnType t, bool allowConst = true){
 
     switch(t){
         case INT:
-            if(allowConst && (rand() % 1000 < constChance))
+            if(allowConst && (rand() % 1000 < CONST_CHANCE))
                 return randConst();
             result.type = 2;
             result.val = rand() % numInts;

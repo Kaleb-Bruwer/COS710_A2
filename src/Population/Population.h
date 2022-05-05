@@ -7,6 +7,8 @@
 #include "GPUNode.h"
 
 class Population{
+private:
+    int opTotalWeight = 0;
 public:
     // Node* trees = 0;
     std::vector<std::vector<Node>> trees;
@@ -16,9 +18,7 @@ public:
     // std::vector<unsigned int> startIndexes;
     unsigned int numNodes = 0;
 
-    int tournamentSize = 2;
-
-    Population(){};
+    Population();
     ~Population();
 
     void rampedFull(int popSize, int maxDepth);

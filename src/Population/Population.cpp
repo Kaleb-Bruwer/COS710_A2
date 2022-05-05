@@ -3,9 +3,16 @@
 #include <cstring>
 
 #include <Helpers.h>
+#include <Parameters.h>
 #include "TreeGen.h"
 
 using namespace std;
+
+Population::Population(){
+    for(int i : OP_WEIGHTS){
+        opTotalWeight += i;
+    }
+}
 
 Population::~Population(){
     // if(trees)
@@ -91,7 +98,7 @@ vector<int> Population::tournamentSelection(float* fitness){
 
     // Divide into tournaments based on above order
     // Incomplete tournament at end gets ignored
-    int lastFullTournament = (popSize/tournamentSize)*tournamentSize;
+    int lastFullTournament = (popSize/TOURNAMENT_SIZE)*TOURNAMENT_SIZE;
 
     int index = 0;
     while(index < lastFullTournament){
@@ -102,7 +109,7 @@ vector<int> Population::tournamentSelection(float* fitness){
         index++;
 
 
-        for(int j=1; j<tournamentSize; j++){
+        for(int j=1; j<TOURNAMENT_SIZE; j++){
             if(best > fitness[index]){
                 best = fitness[index];
                 bestIndex = index;
@@ -257,11 +264,7 @@ void crossover(vector<Node>& lhs, vector<Node>& rhs){
 
 void Population::applyGenOps(std::vector<int> pool){
     // For each, select random genetic operator
-
-    // [Crossover, Mutation, isEmpty]
-    const int opWeights[] = {9,1,0};
-    const int opTotalWeight = 10;
-    const int count = sizeof(opWeights)/sizeof(int);
+    const int count = sizeof(OP_WEIGHTS)/sizeof(int);
 
     vector<int> crossoverPool;
 
@@ -270,9 +273,9 @@ void Population::applyGenOps(std::vector<int> pool){
         int v = rand() % opTotalWeight;
         int i;
         for(i=0; i<count; i++){
-            if(v < opWeights[i])
+            if(v < OP_WEIGHTS[i])
             break;
-            v -= opWeights[i];
+            v -= OP_WEIGHTS[i];
         }
 
         // Apply selected operator (i)
