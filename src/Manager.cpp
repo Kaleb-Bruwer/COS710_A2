@@ -1,9 +1,11 @@
 #include "Manager.h"
 
-#include "cpuExec.h"
 #include <iostream>
 #include <thread>
+#include <string>
 
+#include "cpuExec.h"
+#include "Helpers.h"
 #include <Fitness.h>
 
 using namespace std;
@@ -66,34 +68,30 @@ void Manager::printInfo(){
     // cout << endl;
 }
 
-void Manager::printGenerationStats(int genNum){
-    float avgAcc = 0;
-    float avgAccTrain = 0;
-    float avgFit = 0;
+void Manager::logGeneration(int genNum){
+    ReportLine record;
+    record.generation = genNum;
+    record.trainAcc = make_tuple(
+        getAvg(trainAcc, popSize),
+        getMax(trainAcc, popSize),
+        getStdDev(trainAcc, popSize)
+    );
+    record.testAcc = make_tuple(
+        getAvg(accuracy, popSize),
+        getMax(accuracy, popSize),
+        getStdDev(accuracy, popSize)
+    );
 
-    for(int i=0; i<popSize; i++){
-        avgAcc += accuracy[i];
-        avgAccTrain += trainAcc[i];
-        avgFit += fitness[i];
-    }
-    avgAcc /= popSize;
-    avgAccTrain /= popSize;
-    avgFit /= popSize;
+    record.fitness = make_tuple(
+        getAvg(fitness, popSize),
+        getMin(fitness, popSize),
+        getStdDev(fitness, popSize)
+    );
+    record.numNodes = population.numNodes;
 
-    float bestAcc = 0;
-    float bestAccTrain = 0;
-    for(int i=0; i<popSize; i++){
-        if(accuracy[i] > bestAcc)
-            bestAcc = accuracy[i];
-        if(trainAcc[i] > bestAccTrain)
-            bestAccTrain = trainAcc[i];
-    }
-
-    cout << "Gen " << genNum << ": ";
-    cout << "Accuracy (avg, best): (" << avgAcc << ", " << bestAcc << "), avg fitness: " << avgFit << endl;
-    cout << "Train Acc (avg, best): (" << avgAccTrain << ", " << bestAccTrain << ") ";
-    cout << "Num nodes: " << population.numNodes << "\n\n";
-
+    if(genNum == 0 || genNum % 10 == 9)
+        cout << record;
+    logger.writeLine(record);
 }
 
 void Manager::runCPUThread(int* data, int start, int end){
@@ -115,7 +113,7 @@ void Manager::runCPUThread(int* data, int start, int end){
         trainAcc[i] = hitrate(&data[targetBaseIndex], results, trainSize);
 
         fitness[i] = mean_squared_error(&data[targetBaseIndex], results, trainSize);
-        fitness[i] += treeSize/((float)trainSize);
+        fitness[i] += REGULARIZATION_WEIGHT * (treeSize/((float)trainSize));
 
     }
     delete [] results;
@@ -145,16 +143,25 @@ void Manager::runCPUGeneration(int* data){
 }
 
 
-void Manager::runCPU(int numGen){
+void Manager::runCPU(int numGen, int runNumber){
+    string filename = "../Results/Results_run" + to_string(runNumber);
+    filename += ".txt";
+    cout << "Full results will be stored in: " << filename << endl;
+    cout << "Terminal ouput is condensed\n";
+    logger.openFile(filename);
+    logger.writeHeader();
+    logger.writeHeader(cout);
+
     int* data = (int*)dataLoader.getGPUData();
 
     for(int i=0; i<numGen; i++){
         runCPUGeneration(data);
-        printGenerationStats(i);
+        logGeneration(i);
         vector<int> doomedPool = population.tournamentSelection(fitness);
         population.applyGenOps(doomedPool);
         population.recalcNumNodes();
     }
+    logger.closeFile();
 }
 
 void Manager::runGPU(){

@@ -28,6 +28,7 @@ add_Executable(main
     src/Manager.cpp
     src/cpuExec.cpp
 	src/Fitness.cpp
+	src/Logger.cpp
 )
 
 target_link_libraries(main ${OPENGL_LIBRARY} glfw GLEW_1130)

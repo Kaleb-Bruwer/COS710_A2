@@ -6,19 +6,19 @@
 #include <Parameters.h>
 #include "Manager.h"
 #include "cpuExec.h"
+#include "Logger.h"
 
 /*
 REMOVED 21 corrupt records from cleveland.data
 
 TODO:
-    Write report to file
-    More BOOL functions?
+    Do multiple runs
+    Multi-run report
 */
 
 using namespace std;
 
 int main(){
-
     Manager manager;
     manager.initialize(POPULATION, INIT_DEPTH);
 
