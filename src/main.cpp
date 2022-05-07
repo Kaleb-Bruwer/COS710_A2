@@ -27,7 +27,7 @@ int main(){
     vector<ReportLine> results;
 
     for(int i=0; i<numRuns; i++){
-        srand(i);
+        srand(i*123 + 111);
         auto start = chrono::high_resolution_clock::now();
 
         Manager manager;
