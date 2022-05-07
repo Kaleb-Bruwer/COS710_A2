@@ -34,25 +34,10 @@ void Manager::initialize(int p, int maxDepth){
     // Generate initial population
     popSize = p;
     population.rampedHalfHalf(p, maxDepth);
-    population.makeGPUTrees();
     fitness = new float[p];
     accuracy = new float[p];
     trainAcc = new float[p];
 
-    // // Initialise shader
-    // compShader.initialize();
-    // compShader.loadData(dataLoader.getGPUData(), dataLoader.sizeofGPUData());
-    // compShader.loadTrees(population.gpuTrees, population.numNodes, population.startIndexes);
-    //
-    // GLint t[3];
-    // glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_SIZE, t);
-    // cout << "GL_MAX_COMPUTE_WORK_GROUP_SIZE: " << t[0] << " " << t[1] << " " << t[2] << endl;
-    //
-    // glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_COUNT, t);
-    // cout << "GL_MAX_COMPUTE_WORK_GROUP_COUNT: " << t[0] << " " << t[1] << " " << t[2] << endl;
-    //
-    // glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, t);
-    // cout << "GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS: " << t[0] << " " << t[1] << " " << t[2] << endl;
 }
 
 void Manager::printInfo(){
@@ -61,11 +46,6 @@ void Manager::printInfo(){
     cout << "num Total cases: " << numInputs << endl;
     cout << "total nodes (excl nulls): " << population.numNodes << endl;
 
-    // int* data = (int*)dataLoader.getGPUData();
-    // for(int i=0; i<trainSize; i++){
-    //     cout << data[899*(8+46) + i] << "  ";
-    // }
-    // cout << endl;
 }
 
 void Manager::logGeneration(int genNum){
@@ -164,60 +144,6 @@ void Manager::runCPU(int numGen, int runNumber){
         population.recalcNumNodes();
     }
     logger.closeFile();
-}
-
-void Manager::runGPU(){
-    cout << "Using GPU\n";
-
-    // compShader.execShader(fitness, popSize, numInputs);
-
-    for(int i=0; i<popSize; i++){
-        cout << fitness[i] << " ";
-    }
-    cout << endl;
-}
-
-void Manager::validateGPU(){
-    float* results = new float[popSize*numInputs];
-
-    for(int i=0; i<popSize*numInputs; i++){
-        results[i] = 0.1;
-    }
-    // cout << endl;
-
-    compShader.execShader(results, popSize, numInputs);
-
-    int differences = 0;
-    for(int i=0; i<popSize*numInputs;i++){
-        if(results[i] == 0.1)
-            differences++;
-    }
-    cout << differences << " didn't execute\n";
-
-    int* data = (int*)dataLoader.getGPUData();
-
-    differences = 0;
-    for(int t=0; t<popSize; t++){
-        int treeSize = population.trees[t].size();
-        Node* bottom = &population.trees[t][treeSize-1];
-
-        for(int r=0; r<numInputs; r++){
-            int cpuAns = execTree(bottom, data, r);
-            if(cpuAns != (int)results[t*899 + r]){
-                differences++;
-                // cout << (int)results[t*899 + r] << " should be " << cpuAns << endl;
-                // cout << "Mismatch with tree: ";
-                // for(int i=population.startIndexes[t-1]+2; i < population.startIndexes[t]; i++){
-                //     cout << population.trees[i] << " ";
-                // }
-                // cout << endl;
-                // break;
-
-            }
-        }
-    }
-    cout << "Out of " << popSize * numInputs << " executions, " << differences << " mismatched\n";
-    delete [] results;
 }
 
 ReportLine Manager::getStat(int gen){

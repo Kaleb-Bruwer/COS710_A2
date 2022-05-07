@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "DataLoader.h"
-#include "CompShader.h"
 #include "Logger.h"
 
 #include <Population/Population.h>
@@ -16,7 +15,6 @@ private:
 
     DataLoader dataLoader;
     Population population;
-    CompShader compShader;
 
     int popSize;
     int numInputs = 899;
@@ -38,10 +36,7 @@ public:
     ~Manager();
     void initialize(int popSize, int maxDepth = 10);
     void runCPU(int numGen, int runNumber = 1);
-    void runGPU();
 
-    // Compares GPU output to cpu's
-    void validateGPU();
     void printInfo();
 
     // Returns last stat by default
