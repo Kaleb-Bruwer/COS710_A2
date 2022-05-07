@@ -2,7 +2,7 @@
 
 const int POPULATION = 10000;
 const int INIT_DEPTH = 5;
-const int GENERATIONS = 250;
+const int GENERATIONS = 200;
 
 const int TRAIN_COUNT = 700;
 
@@ -11,7 +11,7 @@ const int TOURNAMENT_SIZE = 6;
 const int TOURNAMENT_WINNERS = 1;
 const int TOURNAMENT_MULTIPLICATION = 3;
 
-const float REGULARIZATION_WEIGHT = 1;
+const float REGULARIZATION_WEIGHT = 0.0004;
 
 const int CONST_CHANCE = 200; //fraction out of 1000
 const int GROW_RATE = 750;

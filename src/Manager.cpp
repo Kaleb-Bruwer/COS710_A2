@@ -89,9 +89,10 @@ void Manager::logGeneration(int genNum){
     );
     record.numNodes = population.numNodes;
 
-    if(genNum == 0 || genNum % 10 == 9)
+    if(genNum % 10 == 0)
         cout << record;
     logger.writeLine(record);
+    stats.push_back(record);
 }
 
 void Manager::runCPUThread(int* data, int start, int end){
@@ -112,8 +113,9 @@ void Manager::runCPUThread(int* data, int start, int end){
 
         trainAcc[i] = hitrate(&data[targetBaseIndex], results, trainSize);
 
-        fitness[i] = mean_squared_error(&data[targetBaseIndex], results, trainSize);
-        fitness[i] += REGULARIZATION_WEIGHT * (treeSize/((float)trainSize));
+        // fitness[i] = mean_squared_error(&data[targetBaseIndex], results, trainSize);
+        fitness[i] = 1 - trainAcc[i];
+        fitness[i] += REGULARIZATION_WEIGHT * treeSize;
 
     }
     delete [] results;
@@ -154,7 +156,7 @@ void Manager::runCPU(int numGen, int runNumber){
 
     int* data = (int*)dataLoader.getGPUData();
 
-    for(int i=0; i<numGen; i++){
+    for(int i=0; i<=numGen; i++){
         runCPUGeneration(data);
         logGeneration(i);
         vector<int> doomedPool = population.tournamentSelection(fitness);
@@ -216,4 +218,10 @@ void Manager::validateGPU(){
     }
     cout << "Out of " << popSize * numInputs << " executions, " << differences << " mismatched\n";
     delete [] results;
+}
+
+ReportLine Manager::getStat(int gen){
+    if(gen < 0)
+        return stats[stats.size()-1];
+    return stats[gen];
 }

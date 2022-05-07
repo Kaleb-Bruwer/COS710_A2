@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <random>
+#include <vector>
 
 #include <Parameters.h>
 #include "Manager.h"
@@ -18,19 +19,52 @@ TODO:
 
 using namespace std;
 
+const int numRuns = 10;
+
 int main(){
-    Manager manager;
-    manager.initialize(POPULATION, INIT_DEPTH);
+    auto startALL = chrono::high_resolution_clock::now();
 
-    manager.printInfo();
-    auto start = chrono::high_resolution_clock::now();
-    manager.runCPU(GENERATIONS);
+    vector<ReportLine> results;
 
-    auto end = chrono::high_resolution_clock::now();
+    for(int i=0; i<numRuns; i++){
+        srand(i);
+        auto start = chrono::high_resolution_clock::now();
 
-    chrono::duration<double> diff = end - start;
-    double ms = diff.count() * 1000;
-    cout << "Time elapsed: " << ms << "ms\n";
+        Manager manager;
+        manager.initialize(POPULATION, INIT_DEPTH);
+
+        manager.runCPU(GENERATIONS, i);
+
+        ReportLine r = manager.getStat();
+        r.generation = i;
+        results.push_back(r);
+
+        auto end = chrono::high_resolution_clock::now();
+
+        chrono::duration<double> diff = end - start;
+        double seconds = diff.count();
+        cout.precision(2);
+        cout << "Run " << i << " runtime: " << seconds << "s\n\n";
+    }
+
+    // Write combined results
+    Logger logger;
+    logger.openFile("../Results/Results_combined.txt");
+    logger.writeHeader("RUN");
+    logger.writeHeader(cout, "RUN");
+    for(ReportLine& r : results){
+        logger.writeLine(r);
+        cout << r;
+    }
+    logger.closeFile();
+
+
+
+    auto endALL = chrono::high_resolution_clock::now();
+
+    chrono::duration<double> diff = endALL - startALL;
+    int seconds = diff.count();
+    cout << "Total program runtime: " << seconds << "s\n";
 
 
 	return 0;

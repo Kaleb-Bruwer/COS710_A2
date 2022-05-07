@@ -11,13 +11,13 @@ void Logger::openFile(string filename){
 }
 
 
-void Logger::writeHeader(){
-    writeHeader(file);
+void Logger::writeHeader(string firstField){
+    writeHeader(file, firstField);
 }
 
-void Logger::writeHeader(ostream &out){
+void Logger::writeHeader(ostream &out, string firstField){
     out << fixed << left;
-    out << setw(8) << "GEN";
+    out << setw(8) << firstField;
     out << setw(24) << "TRAINING ACC";
     out << setw(24) << "TESTING ACC";
     out << setw(36) << "FITNESS";

@@ -23,8 +23,8 @@ private:
     std::ofstream file;
 public:
     void openFile(std::string filename = "results.txt");
-    void writeHeader();
-    void writeHeader(std::ostream& out);
+    void writeHeader(std::string firstField = "GEN");
+    void writeHeader(std::ostream& out, std::string firstField = "GEN");
     void writeLine(ReportLine line);
     void closeFile();
 };

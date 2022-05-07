@@ -1,15 +1,18 @@
 #pragma once
 
+#include <vector>
+
 #include "DataLoader.h"
-#include <Population/Population.h>
 #include "CompShader.h"
 #include "Logger.h"
 
+#include <Population/Population.h>
 #include <Parameters.h>
 
 class Manager{
 private:
     Logger logger;
+    std::vector<ReportLine> stats;
 
     DataLoader dataLoader;
     Population population;
@@ -40,5 +43,8 @@ public:
     // Compares GPU output to cpu's
     void validateGPU();
     void printInfo();
+
+    // Returns last stat by default
+    ReportLine getStat(int gen = -1);
 
 };
