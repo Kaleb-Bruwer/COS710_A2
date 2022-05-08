@@ -3,6 +3,7 @@
 #include <iostream>
 #include <thread>
 #include <string>
+#include <cstring>
 
 #include "cpuExec.h"
 #include "Helpers.h"
@@ -19,6 +20,8 @@ Manager::~Manager(){
         delete [] fitness;
     if(trainAcc)
         delete [] trainAcc;
+    if(calced)
+        delete [] calced;
 }
 
 
@@ -37,7 +40,8 @@ void Manager::initialize(int p, int maxDepth){
     fitness = new float[p];
     accuracy = new float[p];
     trainAcc = new float[p];
-
+    calced = new bool[p];
+    memset(calced, 0, p * sizeof(bool));
 }
 
 void Manager::printInfo(){
@@ -79,6 +83,9 @@ void Manager::runCPUThread(int* data, int start, int end){
     int* results = new int[numInputs];
 
     for(int i=start; i<end; i++){
+        if(calced[i])
+            continue;
+        calced[i] = true;
         // Node* bottom = &population.trees[population.startIndexes[i]];
         int treeSize = population.trees[i].size();
         Node* bottom = &population.trees[i][treeSize-1];
@@ -140,6 +147,10 @@ void Manager::runCPU(int numGen, int runNumber){
         runCPUGeneration(data);
         logGeneration(i);
         vector<int> doomedPool = population.tournamentSelection(fitness);
+
+        // This will allow caching for all trees that don't change
+        for(int d : doomedPool)
+            calced[d] = false;
         population.applyGenOps(doomedPool);
         population.recalcNumNodes();
     }

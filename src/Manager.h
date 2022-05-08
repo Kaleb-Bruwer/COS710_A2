@@ -24,6 +24,7 @@ private:
     float* accuracy = 0;
 
     float* trainAcc = 0;
+    bool* calced = 0; //indicates which trees still have to be calculated
 
     // Looks at fitness and accuracy
     void logGeneration(int genNum);
