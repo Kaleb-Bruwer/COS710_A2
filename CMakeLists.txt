@@ -16,7 +16,8 @@ add_Executable(main
     src/Helpers.cpp
 	src/Population/Population.cpp
 	src/Population/TreeGen.cpp
-	src/Population/Node.cpp
+    src/Population/Node.cpp
+	src/Population/Tree.cpp
     src/Population/GPUNode.cpp
     src/Manager.cpp
     src/cpuExec.cpp
