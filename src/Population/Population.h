@@ -5,6 +5,7 @@
 
 #include "Node.h"
 #include "GPUNode.h"
+#include "Tree.h"
 
 class Population{
 private:
@@ -37,6 +38,9 @@ public:
 };
 
 std::tuple<int, int> randSubtree(const std::vector<Node>& tree, enum NodeReturnType type = NONE);
+
+void mutate(Tree &tree);
+void crossover(Tree &t1, Tree &t2);
 
 // Returns change to numNodes
 int mutate(std::vector<Node>& tree);

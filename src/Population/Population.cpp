@@ -244,6 +244,72 @@ tuple<int, int> randSubtree(const vector<Node>& tree, enum NodeReturnType type){
     return make_tuple(start, end);
 }
 
+void mutate(Tree &tree){
+    int index = rand() % tree.codons.size();
+    tree.codons[index] = rand();
+    tree.mustRegenerate = true;
+}
+
+void crossover(Tree &t1, Tree &t2){
+    // Wrap-around crossover
+    // Assumes codons are of the same size
+    int size = t1.codons.size();
+
+    int len = rand() % size;
+    int start1 = rand() % size;
+    int start2 = rand() % size;
+
+    // Having two temps makes it easier to deal with wrap-around
+
+    vector<unsigned char> temp1(len, 0);
+    vector<unsigned char> temp2(len, 0);
+    int end1 = start1 + len;
+    int end2 = start2 + len;
+
+    bool wrap1 = false;
+    bool wrap2 = false;
+
+    // NOTE: selection excludes end index
+    if(end1 > size){
+        memcpy(&temp1[0], &t1.codons[start1], (size-start1) * sizeof(unsigned char));
+
+        wrap1 = true;
+        memcpy(&temp1[size-start1], &t1.codons[0], (len - (size - start1)) * sizeof(unsigned char));
+    }
+    else{
+        memcpy(&temp1[0], &t1.codons[start1], len * sizeof(unsigned char));
+    }
+
+
+    if(end2 > size){
+        wrap2 = true;
+        memcpy(&temp2[0], &t2.codons[start2], (size-start2) * sizeof(unsigned char));
+        memcpy(&temp2[size-start2], &t2.codons[0], (len - (size - start2)) * sizeof(unsigned char));
+    }
+    else{
+        memcpy(&temp2[0], &t2.codons[start2], len * sizeof(unsigned char));
+    }
+
+
+    // Now put temps back in other trees
+    if(wrap1){
+        memcpy(&t1.codons[start1], &temp2[0], (size - start1) * sizeof(unsigned char));
+        memcpy(&t1.codons[0], &temp2[size-start1], (len -(size - start1)) * sizeof(unsigned char));
+    }
+    else{
+        memcpy(&t1.codons[start1], &temp2[0], len * sizeof(unsigned char));
+    }
+
+    if(wrap2){
+        memcpy(&t2.codons[start2], &temp1[0], (size - start2) * sizeof(unsigned char));
+        memcpy(&t2.codons[0], &temp1[size-start2], (len -(size - start2)) * sizeof(unsigned char));
+    }
+    else{
+        memcpy(&t2.codons[start2], &temp1[0], len * sizeof(unsigned char));
+    }
+}
+
+
 int mutate(vector<Node>& tree){
     int numNodes = -tree.size();
 

@@ -159,6 +159,7 @@ void Tree::treeFromCodons(){
             }
         }
     }
+    mustRegenerate = false;
 }
 
 

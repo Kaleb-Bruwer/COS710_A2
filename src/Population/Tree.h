@@ -10,6 +10,8 @@ const int numFloats = 8;
 
 class Tree{
 public:
+    bool mustRegenerate = true; //Need to derive nodes from codons
+
     std::vector<Node> nodes;
     std::vector<unsigned char> codons;
 
