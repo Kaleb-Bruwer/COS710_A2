@@ -14,7 +14,8 @@ add_Executable(main
     src/main.cpp
     src/DataLoader.cpp
     src/Helpers.cpp
-	src/Population/Population.cpp
+    src/Population/Population.cpp
+	src/Population/Productions.cpp
 	src/Population/TreeGen.cpp
     src/Population/Node.cpp
 	src/Population/Tree.cpp

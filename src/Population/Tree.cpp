@@ -118,3 +118,53 @@ int Tree::exec(int* data, int r){
     // the only value still on the stack is the answer
     return compStack.top();
 }
+
+void Tree::treeFromCodons(){
+    // TODO: depth info may be necessary
+    ProductionTable* pt = ProductionTable::getInstance();
+
+
+    nodes.clear();
+
+    stack<GenerateNode> prodStack;
+    prodStack.push(GenerateNode(RET_INT));
+
+    int c = 0; //codon index
+
+    while(!prodStack.empty()){
+        GenerateNode curr = prodStack.top();
+        prodStack.pop();
+
+        if(curr.type){//Node
+            nodes.push_back(curr.node);
+        }
+        else{//Production
+            vector<GenerateNode> result = pt->getProduction(curr.production, codons[c]);
+            c++;
+            if(c == codons.size())
+                c = 0;
+
+            // First nodes go directly to the tree
+            int start;
+            for(start=0; start < result.size(); start++){
+                if(curr.type)
+                    nodes.push_back(result[start].node);
+                else
+                    break;
+            }
+
+            // Rest goes to the prodStack
+            for(int i=result.size() - 1; i >= start; i--){
+                prodStack.push(result[i]);
+            }
+        }
+    }
+}
+
+
+void Tree::randCodons(int len){
+    codons.resize(len);
+    for(int i=0; i<len; i++){
+        codons[i] = rand();
+    }
+}
