@@ -71,7 +71,7 @@ void Manager::logGeneration(int genNum){
         getMin(fitness, popSize),
         getStdDev(fitness, popSize)
     );
-    // record.numNodes = population.numNodes;
+    record.numNodes = population.numNodes;
 
     if(genNum % 10 == 0)
         cout << record;
@@ -150,7 +150,7 @@ void Manager::runCPU(int numGen, int runNumber){
         for(int d : doomedPool)
             calced[d] = false;
         population.applyGenOps(doomedPool);
-        // population.recalcNumNodes();
+        population.recalcNumNodes();
     }
     logger.closeFile();
 }

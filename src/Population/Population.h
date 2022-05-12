@@ -11,10 +11,9 @@ class Population{
 private:
     int opTotalWeight = 0;
 public:
-    std::vector<Tree> trees;
-    // std::vector<std::vector<Node>> trees;
-    // int popSize = 0;
+    int numNodes;
 
+    std::vector<Tree> trees;
 
     Population();
     ~Population(){};
@@ -27,6 +26,8 @@ public:
     std::vector<int> tournamentSelection(float* fitness);
 
     void applyGenOps(std::vector<int> pool);
+
+    void recalcNumNodes();
 };
 
 void mutate(Tree &tree);

@@ -12,6 +12,9 @@ using namespace std;
 #define castI(a) *(int*)(void*)(&a)
 
 int Tree::exec(int* data, int r){
+    if(mustRegenerate)
+        treeFromCodons();
+
     stack<int> compStack;
     Node* node = &nodes[nodes.size() - 1];
 
@@ -129,6 +132,7 @@ void Tree::treeFromCodons(){
 
 
     nodes.clear();
+    nodes.push_back(Node{0,0});
 
     // 2nd parameter is depth
     stack<tuple<GenerateNode, int>> prodStack;

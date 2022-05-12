@@ -1,6 +1,6 @@
 #pragma once
 
-const int POPULATION = 10000;
+const int POPULATION = 1000;
 const int GENERATIONS = 200;
 
 const int INIT_DEPTH = 5;

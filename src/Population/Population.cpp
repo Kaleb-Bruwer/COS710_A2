@@ -21,6 +21,7 @@ void Population::initPop(int p){
         trees[i].randCodons();
         trees[i].treeFromCodons();
     }
+    recalcNumNodes();
 }
 
 vector<int> Population::tournamentSelection(float* fitness){
@@ -139,6 +140,9 @@ void mutate(Tree &tree){
 void crossover(Tree &t1, Tree &t2){
     // Wrap-around crossover
     // Assumes codons are of the same size
+    t1.mustRegenerate = true;
+    t2.mustRegenerate = true;
+
     int size = t1.codons.size();
 
     int len = rand() % size;
@@ -227,4 +231,12 @@ void Population::applyGenOps(std::vector<int> pool){
         crossover(trees[crossoverPool[i]], trees[crossoverPool[i+1]]);
     }
 
+}
+
+void Population::recalcNumNodes(){
+    numNodes = 0;
+    for(int i=0; i<trees.size(); i++){
+        numNodes+= trees[i].nodes.size();
+    }
+    numNodes -= trees.size(); //Excludes initial 0's
 }
