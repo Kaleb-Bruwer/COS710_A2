@@ -35,7 +35,7 @@ private:
 public:
     Manager(){};
     ~Manager();
-    void initialize(int popSize, int maxDepth = 10);
+    void initialize(int popSize);
     void runCPU(int numGen, int runNumber = 1);
 
     void printInfo();

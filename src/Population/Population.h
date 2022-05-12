@@ -11,21 +11,15 @@ class Population{
 private:
     int opTotalWeight = 0;
 public:
-    // Node* trees = 0;
-    std::vector<std::vector<Node>> trees;
-    int popSize = 0;
+    std::vector<Tree> trees;
+    // std::vector<std::vector<Node>> trees;
+    // int popSize = 0;
 
-    GPUNode* gpuTrees = 0;
-    // std::vector<unsigned int> startIndexes;
-    unsigned int numNodes = 0;
 
     Population();
-    ~Population();
+    ~Population(){};
 
-    void rampedFull(int popSize, int maxDepth);
-    void rampedGrow(int popSize, int maxDepth);
-    void rampedHalfHalf(int popSize, int maxDepth);
-    void makeGPUTrees(){};
+    void initPop(int popSize); //Generate initial population
 
     // clones best performers over worst-performers
     // returns indexes of these clones, which is the pool for genetic operators
@@ -33,16 +27,7 @@ public:
     std::vector<int> tournamentSelection(float* fitness);
 
     void applyGenOps(std::vector<int> pool);
-    unsigned int recalcNumNodes();
-
 };
-
-std::tuple<int, int> randSubtree(const std::vector<Node>& tree, enum NodeReturnType type = NONE);
 
 void mutate(Tree &tree);
 void crossover(Tree &t1, Tree &t2);
-
-// Returns change to numNodes
-int mutate(std::vector<Node>& tree);
-int mutateIsEmpty(std::vector<Node>& tree);
-void crossover(std::vector<Node>& lhs, std::vector<Node>& rhs);

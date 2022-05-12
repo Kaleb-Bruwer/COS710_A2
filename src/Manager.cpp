@@ -25,7 +25,7 @@ Manager::~Manager(){
 }
 
 
-void Manager::initialize(int p, int maxDepth){
+void Manager::initialize(int p){
     // Load data
     dataLoader.addFromFile("../data/cleveland.data", 282);
     dataLoader.addFromFile("../data/hungarian.data", 294);
@@ -36,7 +36,7 @@ void Manager::initialize(int p, int maxDepth){
 
     // Generate initial population
     popSize = p;
-    population.rampedHalfHalf(p, maxDepth);
+    population.initPop(p);
     fitness = new float[p];
     accuracy = new float[p];
     trainAcc = new float[p];
@@ -48,7 +48,7 @@ void Manager::printInfo(){
     cout << "num Trees: " << popSize << endl;
     cout << "num Training cases: " << trainSize << endl;
     cout << "num Total cases: " << numInputs << endl;
-    cout << "total nodes (excl nulls): " << population.numNodes << endl;
+    // cout << "total nodes (excl nulls): " << population.numNodes << endl;
 
 }
 
@@ -71,7 +71,7 @@ void Manager::logGeneration(int genNum){
         getMin(fitness, popSize),
         getStdDev(fitness, popSize)
     );
-    record.numNodes = population.numNodes;
+    // record.numNodes = population.numNodes;
 
     if(genNum % 10 == 0)
         cout << record;
@@ -87,11 +87,9 @@ void Manager::runCPUThread(int* data, int start, int end){
             continue;
         calced[i] = true;
         // Node* bottom = &population.trees[population.startIndexes[i]];
-        int treeSize = population.trees[i].size();
-        Node* bottom = &population.trees[i][treeSize-1];
 
         for(int j=0; j<numInputs; j++){
-            results[j] = execTree(bottom, data, j);
+            results[j] = population.trees[i].exec(data, j);
         }
 
         int targetBaseIndex = 899*(8+46);
@@ -102,7 +100,7 @@ void Manager::runCPUThread(int* data, int start, int end){
 
         // fitness[i] = mean_squared_error(&data[targetBaseIndex], results, trainSize);
         fitness[i] = 1 - trainAcc[i];
-        fitness[i] += REGULARIZATION_WEIGHT * treeSize;
+        // fitness[i] += REGULARIZATION_WEIGHT * treeSize;
 
     }
     delete [] results;
@@ -152,7 +150,7 @@ void Manager::runCPU(int numGen, int runNumber){
         for(int d : doomedPool)
             calced[d] = false;
         population.applyGenOps(doomedPool);
-        population.recalcNumNodes();
+        // population.recalcNumNodes();
     }
     logger.closeFile();
 }

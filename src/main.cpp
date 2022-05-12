@@ -31,7 +31,7 @@ int main(){
         auto start = chrono::high_resolution_clock::now();
 
         Manager manager;
-        manager.initialize(POPULATION, INIT_DEPTH);
+        manager.initialize(POPULATION);
 
         manager.runCPU(GENERATIONS, i);
 

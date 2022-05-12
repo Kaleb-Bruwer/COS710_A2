@@ -15,9 +15,11 @@ public:
     std::vector<Node> nodes;
     std::vector<unsigned char> codons;
 
+    // Get tree result, for fitness evaluation
     int exec(int* data, int record);
 
+    // Initialize
+    void randCodons();
 
-    void randCodons(int len);
     void treeFromCodons();
 };

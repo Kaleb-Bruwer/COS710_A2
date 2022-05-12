@@ -2,6 +2,9 @@
 
 #include <stack>
 #include <climits>
+#include <tuple>
+
+#include <Parameters.h>
 
 using namespace std;
 
@@ -47,6 +50,7 @@ int Tree::exec(int* data, int r){
                             break;
                         case 4: //divide
                             if(right == 0) right = 1;
+                            if(left == INT_MIN) left++;
                             result = left / right;
                             break;
                         case 5: //mod
@@ -126,20 +130,24 @@ void Tree::treeFromCodons(){
 
     nodes.clear();
 
-    stack<GenerateNode> prodStack;
-    prodStack.push(GenerateNode(RET_INT));
+    // 2nd parameter is depth
+    stack<tuple<GenerateNode, int>> prodStack;
+    prodStack.push(make_tuple(GenerateNode(RET_INT), 0));
 
     int c = 0; //codon index
 
     while(!prodStack.empty()){
-        GenerateNode curr = prodStack.top();
+        tuple<GenerateNode, int> topPair = prodStack.top();
+        GenerateNode curr = get<0>(topPair);
+        int depth = get<1>(topPair);
+
         prodStack.pop();
 
         if(curr.type){//Node
             nodes.push_back(curr.node);
         }
         else{//Production
-            vector<GenerateNode> result = pt->getProduction(curr.production, codons[c]);
+            vector<GenerateNode> result = pt->getProduction(curr.production, codons[c], (depth >= MAX_DEPTH));
             c++;
             if(c == codons.size())
                 c = 0;
@@ -155,7 +163,7 @@ void Tree::treeFromCodons(){
 
             // Rest goes to the prodStack
             for(int i=result.size() - 1; i >= start; i--){
-                prodStack.push(result[i]);
+                prodStack.push(make_tuple(result[i], depth+1));
             }
         }
     }
@@ -163,9 +171,9 @@ void Tree::treeFromCodons(){
 }
 
 
-void Tree::randCodons(int len){
-    codons.resize(len);
-    for(int i=0; i<len; i++){
+void Tree::randCodons(){
+    codons.resize(CHROMOSOME_LEN);
+    for(int i=0; i<CHROMOSOME_LEN; i++){
         codons[i] = rand();
     }
 }

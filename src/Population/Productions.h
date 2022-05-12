@@ -39,8 +39,10 @@ private:
     // Every entry is a vector of vectors, with each sub-vector an individual production
     std::map<enum Production, std::vector<std::vector<GenerateNode>>> table;
 
+    Node makeIntInput(unsigned char codon);
+
 public:
     static ProductionTable* getInstance();
 
-    std::vector<GenerateNode> getProduction(enum Production p, unsigned char codon);
+    std::vector<GenerateNode> getProduction(enum Production p, unsigned char codon, bool forceTerminate = false);
 };
