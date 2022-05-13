@@ -4,6 +4,7 @@
 
 #include <vector>
 #include <map>
+#include <tuple>
 
 enum Production{
     RET_INT,
@@ -35,9 +36,11 @@ class ProductionTable{
 private:
     inline static ProductionTable* instance = 0;
     ProductionTable();
+    void initWeights();
 
     // Every entry is a vector of vectors, with each sub-vector an individual production
     std::map<enum Production, std::vector<std::vector<GenerateNode>>> table;
+    std::map<enum Production, std::tuple<int, std::vector<int>>> weights;
 
     Node makeIntInput(unsigned char codon);
 

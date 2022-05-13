@@ -1,5 +1,7 @@
 #include "Productions.h"
 
+#include "Parameters.h"
+
 using namespace std;
 
 ProductionTable* ProductionTable::getInstance(){
@@ -9,7 +11,48 @@ ProductionTable* ProductionTable::getInstance(){
     return instance;
 }
 
+void ProductionTable::initWeights(){
+    int temp = 0;
+    vector<int> w;
+    for(int i : RET_INT_W){
+        temp += i;
+        w.push_back(i);
+    }
+    weights[RET_INT] = make_tuple(temp, w);
+
+    temp = 0;
+    w.clear();
+    for(int i : RET_FLOAT_W){
+        temp += i;
+        w.push_back(i);
+    }
+    weights[RET_FLOAT] = make_tuple(temp, w);
+
+    temp = 0;
+    w.clear();
+    for(int i : RET_BOOL_W){
+        temp += i;
+        w.push_back(i);
+    }
+    weights[RET_BOOL] = make_tuple(temp, w);
+
+    temp = 0;
+    w.clear();
+    for(int i : VAR_INT_W){
+        temp += i;
+        w.push_back(i);
+    }
+    weights[VAR_INT] = make_tuple(temp, w);
+
+    weights[IF_INT] = make_tuple(1, vector<int>{1});
+    weights[IF_FLOAT] = make_tuple(1, vector<int>{1});
+    weights[VAR_FLOAT] = make_tuple(1, vector<int>{1});
+
+}
+
+
 ProductionTable::ProductionTable(){
+    initWeights();
     table[RET_INT] = vector<vector<GenerateNode>>{
         vector<GenerateNode>{GenerateNode(VAR_INT)},
         vector<GenerateNode>{GenerateNode(Node{0,1}), GenerateNode(RET_INT), GenerateNode(RET_INT)}, //+
@@ -27,7 +70,7 @@ ProductionTable::ProductionTable(){
         vector<GenerateNode>{GenerateNode(Node{0,34}), GenerateNode(RET_FLOAT), GenerateNode(RET_FLOAT)}, //-
         vector<GenerateNode>{GenerateNode(Node{0,35}), GenerateNode(RET_FLOAT), GenerateNode(RET_FLOAT)}, //*
         vector<GenerateNode>{GenerateNode(Node{0,36}), GenerateNode(RET_FLOAT), GenerateNode(RET_FLOAT)}, //div
-        vector<GenerateNode>{GenerateNode(Node{0,37}), GenerateNode(RET_INT)}, //round
+        vector<GenerateNode>{GenerateNode(Node{0,37}), GenerateNode(RET_INT)}, //toFloat
         vector<GenerateNode>{GenerateNode(IF_FLOAT)}
     };
 
@@ -69,11 +112,21 @@ vector<GenerateNode> ProductionTable::getProduction(enum Production p,
     if(forceTerminate && (p == RET_INT || p == RET_FLOAT || p == RET_BOOL))
         return table[p][0];
 
+    tuple<int, vector<int>>& w = weights[p];
+    vector<int>& ws = get<1>(w);
 
-    int numOptions = table[p].size();
-    int choose = codon % numOptions;
+    int choose = codon % get<0>(w);
 
-    auto result = table[p][choose];
+    int index =0;
+    for(;index < ws.size(); index++){
+        choose -= ws[index];
+        if(choose < 0)
+            break;
+    }
+
+    auto result = table[p][index];
+
+
     if(p == VAR_INT){
         // codon is bit-shifted since first bit determined int or input
         if(result[0].node.type == 1){//const
