@@ -1,5 +1,7 @@
 #include "Productions.h"
 
+#include <cmath>
+
 #include "Parameters.h"
 
 using namespace std;
@@ -128,9 +130,11 @@ vector<GenerateNode> ProductionTable::getProduction(enum Production p,
 
 
     if(p == VAR_INT){
+        int bitshift = ceil(log(get<0>(w)));
+
         // codon is bit-shifted since first bit determined int or input
         if(result[0].node.type == 1){//const
-            choose = (codon >> 1) % 64;
+            choose = (codon >> bitshift) % 64;
             result[0].node.setConst(choose - 32);
         }
         else{//input
