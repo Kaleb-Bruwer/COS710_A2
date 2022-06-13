@@ -1,6 +1,6 @@
-There is an executable in the build directory. To run it, simply use ```./main``` in the build directory
+Create a build directory, it is listed in the .gitignore to prevent clutter.
 
-To recompile, run the following commands:
+Then, to compile, run the following commands:
 ```
 cd build
 cmake ../
